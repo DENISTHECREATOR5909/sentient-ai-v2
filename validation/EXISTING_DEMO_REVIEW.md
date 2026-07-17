@@ -77,6 +77,23 @@ real backend. This is faster, cheaper, and preserves the design equity you alrea
 
 ---
 
+## Source-integration note — Partner Brief (added after review)
+The uploaded **Vector AI Partner Brief** and the clean-extracted **investor deck** were folded
+in after this review. Two honest updates:
+- **Correction to the export-control finding (Conflict C-6 / Legal lens).** I earlier called
+  export control the blueprint's "biggest omission / nearly silent." The Partner Brief
+  explicitly lists *"sanctions/export screening integrations"* as intended production
+  architecture. Accurate statement: export screening is **acknowledged but undeveloped**, and
+  absent from the master blueprint's main legal section. The gate still stands (it must become
+  a concrete, counsel-scoped workstream before a cross-border pilot) — but "biggest omission"
+  was too strong. Record corrected.
+- **Demo v2 realizes two named Partner-Brief features.** The conversational intake IS the
+  Brief's **"Deal Strategy Interview"**; the masked private-price bridge IS the **"Advisor-to-
+  Advisor Bridge."** Build is aligned to the source, not improvised.
+- **Investor-view framing to keep:** "Version 1 is a better aviation transaction network;
+  Version 2 is a scalable commercial-intelligence company," backed by the four graphs
+  (Evidence / Opportunity / Reliability / Advisor Outcome), the last being the hardest to copy.
+
 ## Demo v2 change-list (what "evolve" means concretely)
 1. **Reframe entry to conversational intake** (advisor asks; builds Goal Contract); keep a
    one-part test-drive path. Demote the search box.
