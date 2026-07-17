@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="description" content="AeroLoop 2.0 investor demo — AI-powered aviation aftermarket intelligence." />
+  <title>AeroLoop 2.0 — Vector Advisor OS</title>
+  <style>
+:root{
+  --bg:#05070b;--bg2:#090d14;--surface:#0d121b;--surface2:#111925;--surface3:#151f2e;
+  --line:rgba(180,205,255,.105);--line2:rgba(180,205,255,.19);--line3:rgba(180,205,255,.3);
+  --text:#f6f8ff;--muted:#8f9aac;--muted2:#616c7d;
+  --blue:#7587ff;--blue2:#5266ff;--cyan:#43ddff;--aqua:#5ff2d5;--lime:#91f4a9;--gold:#ffc875;--orange:#ff9d69;--red:#ff6d80;--purple:#b78cff;
+  --shadow:0 28px 90px rgba(0,0,0,.5);--shadow2:0 10px 40px rgba(0,0,0,.34);
+  --r1:14px;--r2:20px;--r3:28px;--font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden}button,input,select,textarea{font:inherit}button{color:inherit}a{color:inherit;text-decoration:none}::selection{background:rgba(117,135,255,.35)}
+#ambientCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.72}.noise{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E")}
+.glass-panel{background:linear-gradient(145deg,rgba(18,27,42,.82),rgba(7,11,18,.88));border:1px solid var(--line2);box-shadow:var(--shadow);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}
+.intro{display:none;position:relative;z-index:1;min-height:100vh;padding:28px clamp(22px,4vw,64px) 20px;overflow:hidden;background:radial-gradient(circle at 82% 18%,rgba(82,102,255,.12),transparent 27%),radial-gradient(circle at 60% 76%,rgba(67,221,255,.08),transparent 30%)}.intro.active{display:flex;flex-direction:column}.intro:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.017) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.017) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.86),transparent 95%)}
+.intro-nav{height:54px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.08em;border:0;background:transparent;padding:0;cursor:pointer}.brand-mark{position:relative;width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#7a8cff,#4bdfff 52%,#5ef3d5);box-shadow:0 0 36px rgba(82,102,255,.3);overflow:hidden}.brand-mark:before{content:"";position:absolute;inset:3px;border-radius:10px;background:#080c13}.brand-mark i,.brand-mark b{position:absolute;z-index:2;background:linear-gradient(90deg,var(--cyan),var(--blue));height:3px;border-radius:999px;left:9px;transform-origin:left center}.brand-mark i{width:20px;top:13px;transform:rotate(28deg)}.brand-mark b{width:16px;top:22px;transform:rotate(-28deg)}.brand-word{font-size:14px}.brand-version{font-size:9px;color:var(--cyan);padding:3px 6px;border:1px solid rgba(67,221,255,.25);border-radius:999px}.intro-status{font-size:10px;letter-spacing:.18em;color:#8792a7;font-weight:800;display:flex;align-items:center;gap:9px}.intro-status span{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:blink 1.6s ease-in-out infinite}.quiet-btn{border:1px solid var(--line);background:rgba(255,255,255,.025);padding:9px 14px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer}.quiet-btn:hover{border-color:var(--line3);background:rgba(255,255,255,.05)}
+.intro-grid{flex:1;display:grid;grid-template-columns:minmax(0,.93fr) minmax(520px,1.07fr);gap:clamp(30px,5vw,90px);align-items:center;position:relative;z-index:2;padding:44px 0 28px}.intro-copy{max-width:770px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:900;letter-spacing:.19em;color:#b7c1d7;border:1px solid var(--line2);background:rgba(255,255,255,.026);padding:9px 13px;border-radius:999px}.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 16px var(--cyan);animation:blink 1.5s ease-in-out infinite}.intro h1{font-size:clamp(62px,7.2vw,118px);letter-spacing:-.075em;line-height:.88;margin:26px 0 27px;font-weight:850}.intro h1 em{font-style:normal;background:linear-gradient(95deg,#fff 0%,#9eaaff 35%,#45deff 72%,#62f2cf);-webkit-background-clip:text;color:transparent}.intro-lede{font-size:clamp(16px,1.35vw,21px);line-height:1.72;color:#aeb8c8;max-width:720px;margin:0}.intro-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}.primary-cta,.secondary-cta{height:52px;border-radius:15px;padding:0 21px;border:0;font-weight:900;cursor:pointer;transition:.2s transform,.2s box-shadow,.2s background}.primary-cta{background:linear-gradient(120deg,#7c8cff,#50dffc 60%,#62efcf);color:#050810;box-shadow:0 15px 45px rgba(92,111,255,.3)}.primary-cta span{margin-left:14px}.primary-cta:hover{transform:translateY(-2px);box-shadow:0 20px 54px rgba(92,111,255,.42)}.secondary-cta{border:1px solid var(--line2);background:rgba(255,255,255,.035);color:#dce3f3}.secondary-cta:hover{background:rgba(255,255,255,.065)}.play-dot{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:rgba(117,135,255,.15);color:#aeb9ff;font-size:9px;margin-right:9px}.intro-proof{display:flex;gap:36px;margin-top:45px;padding-top:27px;border-top:1px solid var(--line)}.intro-proof div{display:flex;flex-direction:column;gap:3px}.intro-proof strong{font-size:22px}.intro-proof span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+.hero-system{position:relative;min-height:650px;display:grid;place-items:center}.system-halo{position:absolute;width:670px;height:670px;border-radius:50%;background:radial-gradient(circle,rgba(84,104,255,.16),rgba(67,221,255,.045) 42%,transparent 68%);filter:blur(2px);animation:halo 7s ease-in-out infinite}.system-halo:before,.system-halo:after{content:"";position:absolute;inset:8%;border-radius:50%;border:1px solid rgba(117,135,255,.09)}.system-halo:after{inset:22%;border-style:dashed;animation:spin 30s linear infinite}.hero-console{position:relative;z-index:2;width:min(760px,95%);border-radius:28px;padding:26px;overflow:hidden}.hero-console:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(117,135,255,.08),transparent 40%,rgba(67,221,255,.04))}.console-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:22px}.console-kicker{font-size:9px;letter-spacing:.17em;color:var(--cyan);font-weight:900}.console-head h3{font-size:19px;margin:7px 0 0;letter-spacing:-.02em}.live-pill{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:.15em;font-weight:900;color:#c8ffd5;border:1px solid rgba(145,244,169,.2);background:rgba(145,244,169,.07);padding:7px 9px;border-radius:999px}.live-pill i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}.hero-score-wrap{position:relative;display:grid;grid-template-columns:170px 1fr;gap:24px;align-items:center;margin:25px 0;padding:24px;border:1px solid var(--line);border-radius:20px;background:rgba(4,7,12,.45)}.hero-score{width:148px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--cyan) calc(var(--score)*1%),rgba(255,255,255,.07) 0);position:relative;box-shadow:0 0 40px rgba(67,221,255,.12)}.hero-score:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#0a1018;border:1px solid var(--line)}.hero-score div{position:relative;text-align:center}.hero-score strong{display:block;font-size:43px;letter-spacing:-.06em}.hero-score span{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}.score-copy p{font-size:14px;line-height:1.6;color:#adb8c9;margin:0 0 15px}.delta-row{display:flex;align-items:center;gap:9px;font-size:12px;color:#d8deea;margin-top:8px}.delta-row span{display:grid;place-items:center;width:31px;height:23px;border-radius:8px;background:rgba(145,244,169,.1);color:var(--lime);font-size:10px;font-weight:900}.limit-row{position:relative;display:grid;grid-template-columns:1fr 112px 1fr;gap:12px;align-items:center}.limit-card{padding:15px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}.limit-card span{display:block;font-size:8px;letter-spacing:.13em;color:var(--muted);font-weight:900}.limit-card strong{display:block;font-size:24px;margin:7px 0 3px}.limit-card small{font-size:10px;color:#798597}.limit-card.buyer strong{color:#9ba7ff}.limit-card.seller strong{color:#65e7ff}.bridge-line{display:flex;align-items:center;gap:5px}.bridge-line i{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold))}.bridge-line i:last-child{background:linear-gradient(90deg,var(--gold),transparent)}.bridge-line span{font-size:9px;color:var(--gold);white-space:nowrap}.vector-line{position:relative;margin-top:16px;display:flex;align-items:center;gap:12px;border:1px solid rgba(117,135,255,.18);background:rgba(117,135,255,.055);border-radius:17px;padding:13px}.vector-orb{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,#8beaff 16%,#6e7eff 48%,#2a356d 72%,#0d1224);box-shadow:0 0 22px rgba(103,126,255,.65),inset -4px -5px 10px rgba(0,0,0,.45);flex:none;animation:orb 4s ease-in-out infinite}.vector-orb.large{width:40px;height:40px}.vector-line b{font-size:11px}.vector-line p{font-size:10px;line-height:1.45;color:#9ba7ba;margin:3px 0 0}.vector-line button{margin-left:auto;border:1px solid rgba(117,135,255,.2);background:rgba(117,135,255,.12);padding:8px 10px;border-radius:9px;font-size:9px;font-weight:900;cursor:pointer}.floating-card{position:absolute;z-index:3;width:190px;border:1px solid var(--line2);background:rgba(10,15,24,.9);backdrop-filter:blur(20px);border-radius:16px;padding:13px;box-shadow:var(--shadow2);animation:float 5.5s ease-in-out infinite}.floating-card span{font-size:7px;letter-spacing:.14em;color:var(--muted);font-weight:900}.floating-card strong{font-size:20px;display:block;margin:7px 0 3px}.floating-card small{font-size:9px;color:#758194}.float-a{left:-18px;top:72px}.float-b{right:-20px;bottom:94px;animation-delay:-2s}.float-c{left:22px;bottom:36px;animation-delay:-3.2s;width:215px}.mini-bars{display:flex;align-items:flex-end;gap:4px;height:34px;margin:7px 0}.mini-bars i{width:10px;border-radius:3px 3px 1px 1px;background:linear-gradient(to top,var(--blue2),var(--cyan));animation:bars 2.8s ease-in-out infinite}.mini-bars i:nth-child(1){height:35%}.mini-bars i:nth-child(2){height:47%;animation-delay:-.3s}.mini-bars i:nth-child(3){height:38%;animation-delay:-.8s}.mini-bars i:nth-child(4){height:68%;animation-delay:-1.1s}.mini-bars i:nth-child(5){height:79%;animation-delay:-.5s}.mini-bars i:nth-child(6){height:100%;animation-delay:-1.5s}.intro-footer{position:relative;z-index:2;display:flex;align-items:center;gap:12px;color:#697487;font-size:11px;letter-spacing:.04em;border-top:1px solid var(--line);padding-top:17px}.intro-footer strong{color:#aeb8c9}.scroll-cue{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:8px;letter-spacing:.18em}.scroll-cue i{width:18px;height:29px;border:1px solid var(--line2);border-radius:999px;position:relative}.scroll-cue i:after{content:"";position:absolute;top:5px;left:7px;width:3px;height:6px;border-radius:999px;background:var(--cyan);animation:scroll 1.8s ease infinite}
+.app-shell{display:none;position:relative;z-index:1;min-height:100vh;background:radial-gradient(circle at 70% 0%,rgba(82,102,255,.055),transparent 28%)}.app-shell.active{display:grid;grid-template-columns:248px minmax(0,1fr)}.rail{height:100vh;position:sticky;top:0;z-index:40;border-right:1px solid var(--line);background:rgba(5,8,13,.9);backdrop-filter:blur(25px);padding:16px 13px;display:flex;flex-direction:column;transition:.25s width}.rail-top{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 7px}.brand.compact .brand-mark{width:34px;height:34px}.brand.compact .brand-word{font-size:12px}.rail-collapse{border:0;background:transparent;color:#647083;font-size:18px;cursor:pointer}.persona-switcher{position:relative;margin:14px 0 15px;padding:11px 10px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.022);display:grid;grid-template-columns:35px 1fr 20px;align-items:center;gap:9px}.persona-avatar{width:35px;height:35px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#33458f,#1d9dbb);font-weight:900;font-size:11px}.persona-meta{min-width:0}.persona-meta b,.persona-meta span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.persona-meta b{font-size:11px}.persona-meta span{font-size:8px;color:var(--muted);margin-top:3px}.persona-switcher>button{border:0;background:transparent;color:#8792a5;cursor:pointer}.persona-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:70;padding:8px;border:1px solid var(--line2);border-radius:15px;background:#0b111b;box-shadow:var(--shadow2)}.persona-menu.open{display:block;animation:pop .18s ease}.persona-menu button{width:100%;display:flex;align-items:center;gap:9px;border:0;background:transparent;padding:9px;border-radius:10px;text-align:left;cursor:pointer}.persona-menu button:hover{background:rgba(255,255,255,.045)}.persona-menu span{display:flex;flex-direction:column}.persona-menu b{font-size:10px}.persona-menu small{font-size:8px;color:var(--muted);margin-top:2px}.persona-dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 10px currentColor}.persona-dot.seller{background:var(--cyan);color:var(--cyan)}.persona-dot.buyer{background:var(--blue);color:var(--blue)}.persona-dot.partner{background:var(--gold);color:var(--gold)}.persona-dot.repair{background:var(--lime);color:var(--lime)}.persona-dot.investor{background:var(--purple);color:var(--purple)}.rail-nav{display:flex;flex-direction:column;gap:3px;overflow:auto;padding-right:2px}.rail-label{font-size:7px;letter-spacing:.18em;color:#485365;font-weight:900;padding:15px 11px 5px}.nav-item{height:39px;border:1px solid transparent;border-radius:11px;background:transparent;color:#7e899b;display:grid;grid-template-columns:27px 1fr auto;align-items:center;gap:8px;padding:0 9px;text-align:left;cursor:pointer;transition:.18s}.nav-item:hover{background:rgba(255,255,255,.032);color:#cdd5e4}.nav-item.active{background:linear-gradient(90deg,rgba(117,135,255,.13),rgba(67,221,255,.045));border-color:rgba(117,135,255,.14);color:#f5f7ff}.nav-glyph{display:grid;place-items:center;font-size:13px;color:#8f9ab1}.nav-item b{font-size:10px}.nav-count{font-style:normal;font-size:7px;font-weight:900;background:rgba(117,135,255,.14);color:#b9c2ff;padding:4px 6px;border-radius:999px}.nav-count.hot{color:#ffd594;background:rgba(255,200,117,.11)}.nav-live{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}.rail-bottom{margin-top:auto;padding-top:10px}.system-state{padding:11px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.system-state span{display:flex;align-items:center;gap:7px;font-size:7px;letter-spacing:.14em;color:#aeb8c9;font-weight:900}.system-state i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}.system-state small{display:block;font-size:8px;color:#596476;margin-top:6px}
+.workspace{min-width:0;position:relative}.topbar{height:76px;position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:rgba(5,8,13,.78);backdrop-filter:blur(25px);display:grid;grid-template-columns:1fr minmax(260px,520px) 1fr;align-items:center;padding:0 25px;gap:20px}.topbar-left{display:flex;align-items:center;gap:11px}.topbar-left span{font-size:7px;letter-spacing:.15em;color:#667285;font-weight:900}.topbar-left h2{font-size:16px;margin:3px 0 0;letter-spacing:-.02em}.mobile-menu{display:none;border:0;background:transparent;color:#fff;font-size:18px}.universal-search{height:39px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.024);display:grid;grid-template-columns:26px 1fr auto;align-items:center;padding:0 10px;color:#647083}.universal-search input{border:0;outline:0;background:transparent;color:#e9edf6;font-size:10px;min-width:0}.universal-search kbd{font-size:8px;border:1px solid var(--line);background:#0b111a;padding:4px 6px;border-radius:6px;color:#5f6a7a}.topbar-right{display:flex;align-items:center;justify-content:flex-end;gap:9px}.top-icon{width:38px;height:38px;border:1px solid var(--line);background:rgba(255,255,255,.024);border-radius:12px;position:relative;cursor:pointer}.top-icon i{position:absolute;right:8px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange)}.quick-create{height:39px;border:0;border-radius:12px;background:linear-gradient(110deg,#7587ff,#5cdcf5);color:#050810;font-size:10px;font-weight:900;padding:0 14px;cursor:pointer;box-shadow:0 10px 30px rgba(82,102,255,.18)}.quick-create span{font-size:15px;margin-right:4px}.app-view{display:none;padding:24px 25px 88px;max-width:1650px;margin:0 auto;animation:viewIn .25s ease}.app-view.active{display:block}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:25px;margin-bottom:18px}.page-head h1{font-size:27px;letter-spacing:-.045em;margin:5px 0 6px}.page-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.kicker{font-size:7px;letter-spacing:.18em;color:var(--cyan);font-weight:900}.head-actions{display:flex;gap:9px}.btn{border:1px solid var(--line);background:rgba(255,255,255,.028);padding:10px 13px;border-radius:11px;font-size:9px;font-weight:900;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);border-color:var(--line3)}.btn.primary{border:0;background:linear-gradient(110deg,#7184ff,#50dff5);color:#050810;box-shadow:0 10px 30px rgba(82,102,255,.18)}.btn.success{border-color:rgba(145,244,169,.2);background:rgba(145,244,169,.08);color:#cbffd5}.btn.gold{border-color:rgba(255,200,117,.22);background:rgba(255,200,117,.08);color:#ffdfa6}.btn.danger{border-color:rgba(255,109,128,.22);background:rgba(255,109,128,.08);color:#ffb7c1}.btn.small{padding:7px 9px;border-radius:9px;font-size:8px}.btn.wide{width:100%}.panel{position:relative;border:1px solid var(--line);border-radius:19px;background:linear-gradient(145deg,rgba(15,22,34,.78),rgba(8,12,19,.82));box-shadow:var(--shadow2);overflow:hidden}.panel:after{content:"";position:absolute;pointer-events:none;inset:0;background:linear-gradient(120deg,rgba(117,135,255,.035),transparent 35%,rgba(67,221,255,.018))}.panel-pad{padding:18px}.panel-head{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:17px 18px 0}.panel-head h3{font-size:12px;margin:0}.panel-head p{font-size:8px;color:var(--muted);margin:5px 0 0}.panel-title-row{display:flex;align-items:center;gap:9px}.status-chip{font-size:7px;letter-spacing:.1em;padding:5px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:900}.status-chip.live{color:#c7ffd3;border-color:rgba(145,244,169,.18);background:rgba(145,244,169,.06)}.status-chip.hot{color:#ffdea3;border-color:rgba(255,200,117,.2);background:rgba(255,200,117,.07)}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric-card{position:relative;padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.022);overflow:hidden}.metric-card:before{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-45px;top:-45px;background:radial-gradient(circle,rgba(117,135,255,.14),transparent 65%)}.metric-label{font-size:7px;letter-spacing:.12em;color:var(--muted);font-weight:900}.metric-value{font-size:25px;letter-spacing:-.045em;font-weight:850;margin:8px 0 5px}.metric-sub{font-size:8px;color:#758194}.metric-trend{position:absolute;right:12px;bottom:12px;font-size:7px;color:var(--lime);background:rgba(145,244,169,.07);padding:4px 6px;border-radius:999px}.command-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(310px,.65fr);gap:13px;margin-top:13px}.command-left{display:grid;gap:13px}.command-right{display:grid;gap:13px;align-content:start}.briefing-panel{padding:20px;min-height:250px}.vector-header{display:flex;align-items:center;gap:12px;position:relative;z-index:1}.vector-header h3{margin:0;font-size:12px}.vector-header p{font-size:8px;color:var(--muted);margin:4px 0 0}.vector-time{margin-left:auto;font-size:7px;color:#5f6b7c}.briefing-message{position:relative;z-index:1;font-size:20px;letter-spacing:-.03em;line-height:1.34;max-width:850px;margin:24px 0 19px}.briefing-message em{font-style:normal;color:var(--cyan)}.action-stack{position:relative;z-index:1;display:grid;gap:8px}.advisor-action{display:grid;grid-template-columns:33px 1fr auto;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(255,255,255,.021);padding:9px;border-radius:12px;transition:.18s}.advisor-action:hover{background:rgba(255,255,255,.04);border-color:var(--line2)}.action-impact{width:33px;height:33px;border-radius:10px;display:grid;place-items:center;background:rgba(145,244,169,.08);color:var(--lime);font-size:9px;font-weight:900}.advisor-action b{font-size:9px}.advisor-action p{font-size:8px;color:var(--muted);margin:3px 0 0}.advisor-action button{border:0;background:rgba(117,135,255,.12);color:#bec6ff;padding:7px 8px;border-radius:8px;font-size:7px;font-weight:900;cursor:pointer}.compat-panel{padding:18px}.compat-layout{display:grid;grid-template-columns:145px 1fr;gap:18px;align-items:center;position:relative;z-index:1}.score-gauge{width:135px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--cyan) calc(var(--score)*1%),rgba(255,255,255,.07) 0)}.score-gauge:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#0a1018;border:1px solid var(--line)}.score-gauge div{position:relative;text-align:center}.score-gauge strong{font-size:37px;display:block;letter-spacing:-.06em}.score-gauge span{font-size:7px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}.compat-copy h4{font-size:11px;margin:0 0 6px}.compat-copy p{font-size:8px;color:var(--muted);line-height:1.5;margin:0 0 12px}.compat-factors{display:grid;gap:6px}.factor-row{display:grid;grid-template-columns:95px 1fr 28px;align-items:center;gap:7px}.factor-row label{font-size:7px;color:#9ca7b8}.factor-bar{height:5px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.factor-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--cyan))}.factor-row b{font-size:7px;color:#aab4c4;text-align:right}.chart{height:160px;position:relative;z-index:1;margin:10px 15px 15px}.chart svg{width:100%;height:100%;overflow:visible}.chart-grid line{stroke:rgba(255,255,255,.045);stroke-width:1}.chart-area{fill:url(#chartFill)}.chart-line{fill:none;stroke:url(#chartStroke);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(67,221,255,.35))}.chart-dot{fill:#fff;stroke:var(--cyan);stroke-width:4}.signal-list{padding:10px 15px 15px;display:grid;gap:8px;position:relative;z-index:1}.signal-item{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:9px}.signal-icon{width:30px;height:30px;border:1px solid var(--line);border-radius:9px;display:grid;place-items:center;color:var(--cyan);font-size:10px}.signal-item b{font-size:9px}.signal-item span{display:block;font-size:7px;color:var(--muted);margin-top:3px}.signal-item em{font-style:normal;font-size:7px;padding:4px 6px;border-radius:999px;background:rgba(145,244,169,.07);color:var(--lime)}.opportunity-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}.opp-card{position:relative;padding:15px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.021);overflow:hidden}.opp-card:before{content:"";position:absolute;inset:0;background:linear-gradient(130deg,rgba(117,135,255,.05),transparent 60%)}.opp-top{position:relative;display:flex;justify-content:space-between;gap:9px}.opp-pn{font-size:11px;font-weight:900}.opp-desc{font-size:7px;color:var(--muted);margin-top:4px}.opp-score{font-size:17px;color:var(--cyan);font-weight:900}.opp-meta{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}.opp-meta div{padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.15)}.opp-meta span{font-size:6px;color:var(--muted);display:block}.opp-meta b{font-size:9px;display:block;margin-top:4px}.opp-actions{position:relative;display:flex;gap:7px;margin-top:11px}
+.vector-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:13px}.chat-panel{min-height:660px;display:flex;flex-direction:column}.chat-head{display:flex;align-items:center;justify-content:space-between;padding:17px 18px;border-bottom:1px solid var(--line);position:relative;z-index:1}.chat-agent{display:flex;align-items:center;gap:11px}.chat-agent b{font-size:11px}.chat-agent span{font-size:7px;color:var(--muted);display:block;margin-top:4px}.chat-body{flex:1;padding:18px;overflow:auto;display:flex;flex-direction:column;gap:11px;position:relative;z-index:1}.bubble{max-width:82%;padding:12px 13px;border-radius:15px;font-size:9px;line-height:1.6}.bubble.agent{align-self:flex-start;border:1px solid rgba(117,135,255,.17);background:rgba(117,135,255,.07)}.bubble.user{align-self:flex-end;border:1px solid var(--line);background:rgba(255,255,255,.045)}.bubble .analysis-card{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:10px;background:rgba(0,0,0,.16)}.typing{display:flex;gap:4px;padding:8px}.typing i{width:5px;height:5px;border-radius:50%;background:#78849a;animation:typing 1.2s ease infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}.chat-input{position:relative;z-index:1;border-top:1px solid var(--line);padding:12px;display:flex;gap:8px}.chat-input input{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:11px;padding:11px;color:#fff;font-size:9px;outline:0}.advisor-profile{display:grid;gap:13px}.profile-section{padding:16px}.profile-section h3{font-size:10px;margin:0 0 13px}.profile-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.045)}.profile-item:last-child{border-bottom:0}.profile-item span{font-size:8px;color:var(--muted)}.profile-item b{font-size:8px}.preference{margin-top:11px}.preference label{font-size:7px;color:var(--muted);display:flex;justify-content:space-between}.range{width:100%;accent-color:var(--blue);margin-top:8px}.permission-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.permission{border:1px solid var(--line);border-radius:10px;padding:8px;background:rgba(255,255,255,.018)}.permission span{display:block;font-size:6px;color:var(--muted)}.permission b{display:block;font-size:8px;margin-top:4px}.toggle{width:34px;height:19px;border-radius:999px;background:#202836;border:1px solid var(--line);position:relative;cursor:pointer}.toggle:before{content:"";position:absolute;width:13px;height:13px;border-radius:50%;left:2px;top:2px;background:#677285;transition:.2s}.toggle.on{background:rgba(117,135,255,.28);border-color:rgba(117,135,255,.35)}.toggle.on:before{left:17px;background:#aeb8ff;box-shadow:0 0 10px rgba(117,135,255,.6)}
+.match-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(350px,.9fr);gap:13px}.match-map{min-height:580px;padding:18px}.map-stage{position:relative;height:410px;margin-top:10px;border:1px solid var(--line);border-radius:18px;background:radial-gradient(circle at 50% 50%,rgba(117,135,255,.08),transparent 44%),rgba(0,0,0,.18);overflow:hidden}.map-stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:31px 31px}.map-ring{position:absolute;border:1px solid rgba(117,135,255,.1);border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}.map-ring.r1{width:130px;height:130px}.map-ring.r2{width:240px;height:240px}.map-ring.r3{width:360px;height:360px;border-style:dashed;animation:spin 40s linear infinite}.map-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 30%,#fff,#8beaff 10%,#677aff 45%,#172252 74%,#0b1120);box-shadow:0 0 55px rgba(101,125,255,.5)}.map-core span{font-size:8px;font-weight:900}.map-node{position:absolute;width:118px;border:1px solid var(--line2);border-radius:13px;background:rgba(11,17,27,.92);padding:9px;box-shadow:var(--shadow2);cursor:pointer;transition:.18s}.map-node:hover{transform:translateY(-3px);border-color:rgba(67,221,255,.35)}.map-node b{font-size:8px;display:block}.map-node span{font-size:6px;color:var(--muted);display:block;margin-top:4px}.map-node strong{display:block;margin-top:7px;font-size:13px;color:var(--cyan)}.node-a{left:6%;top:18%}.node-b{right:5%;top:13%}.node-c{right:4%;bottom:17%}.node-d{left:9%;bottom:11%}.node-e{left:43%;top:4%}.connector{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);transform-origin:left;opacity:.5}.match-detail{padding:18px}.detail-score-row{display:grid;grid-template-columns:110px 1fr;gap:13px;align-items:center}.mini-score{width:100px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--cyan) calc(var(--score)*1%),rgba(255,255,255,.07) 0);position:relative}.mini-score:before{content:"";position:absolute;inset:7px;background:#0b111a;border-radius:50%;border:1px solid var(--line)}.mini-score div{position:relative;text-align:center}.mini-score b{display:block;font-size:26px}.mini-score span{font-size:6px;color:var(--muted);letter-spacing:.1em}.match-detail h3{font-size:13px;margin:0 0 6px}.match-detail p{font-size:8px;color:var(--muted);line-height:1.5;margin:0}.unlock-list{display:grid;gap:7px;margin-top:15px}.unlock-item{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.unlock-item .plus{width:34px;height:31px;display:grid;place-items:center;border-radius:9px;background:rgba(145,244,169,.07);color:var(--lime);font-size:8px;font-weight:900}.unlock-item b{font-size:8px}.unlock-item span{display:block;font-size:6px;color:var(--muted);margin-top:3px}.unlock-item button{border:0;background:transparent;color:#aeb8ff;font-size:7px;font-weight:900;cursor:pointer}
+.market-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:13px}.market-hero{padding:20px}.pulse-summary{display:flex;align-items:flex-end;justify-content:space-between;gap:15px}.pulse-summary h3{font-size:17px;margin:7px 0 4px}.pulse-summary p{font-size:8px;color:var(--muted);margin:0}.pulse-index{text-align:right}.pulse-index span{display:block;font-size:7px;color:var(--muted)}.pulse-index strong{font-size:34px;color:var(--cyan)}.bar-chart{height:230px;display:flex;align-items:flex-end;gap:10px;padding:27px 4px 0;position:relative}.bar-col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:7px}.bar-col i{display:block;border-radius:7px 7px 2px 2px;background:linear-gradient(to top,rgba(117,135,255,.35),rgba(67,221,255,.95));box-shadow:0 0 18px rgba(67,221,255,.12);min-height:10px}.bar-col span{font-size:6px;color:var(--muted);text-align:center}.heat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:15px}.heat-cell{min-height:58px;border-radius:10px;border:1px solid var(--line);padding:8px;background:rgba(255,255,255,.02)}.heat-cell.hot1{background:rgba(117,135,255,.08)}.heat-cell.hot2{background:rgba(67,221,255,.11)}.heat-cell.hot3{background:rgba(145,244,169,.11)}.heat-cell b{font-size:7px}.heat-cell span{font-size:6px;color:var(--muted);display:block;margin-top:6px}.source-stack{padding:14px;display:grid;gap:7px}.source-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px;border:1px solid var(--line);border-radius:11px}.source-row b{font-size:8px}.source-row span{display:block;font-size:6px;color:var(--muted);margin-top:3px}.source-row em{font-style:normal;font-size:6px;color:var(--lime);align-self:center}.price-range{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center;padding:16px}.price-block{border:1px solid var(--line);border-radius:13px;padding:12px;background:rgba(255,255,255,.018)}.price-block span{display:block;font-size:6px;color:var(--muted)}.price-block strong{display:block;font-size:20px;margin-top:6px}.price-range>span{font-size:8px;color:#617084}
+.twin-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(350px,.85fr);gap:13px}.strategy-tabs{display:flex;gap:6px;padding:13px 15px;border-bottom:1px solid var(--line);position:relative;z-index:1}.strategy-tab{border:1px solid var(--line);background:transparent;padding:7px 10px;border-radius:9px;font-size:7px;color:var(--muted);cursor:pointer}.strategy-tab.active{background:rgba(117,135,255,.12);border-color:rgba(117,135,255,.2);color:#d9deff}.twin-forecast{padding:16px}.forecast-main{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.forecast-main span{font-size:7px;color:var(--muted);letter-spacing:.12em}.forecast-main strong{font-size:34px;display:block;margin:7px 0 3px}.forecast-main small{font-size:8px;color:var(--lime)}.forecast-chart{height:250px;margin-top:10px}.strategy-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.strategy-metrics div{border:1px solid var(--line);border-radius:11px;padding:10px;background:rgba(255,255,255,.018)}.strategy-metrics span{font-size:6px;color:var(--muted);display:block}.strategy-metrics b{font-size:11px;display:block;margin-top:5px}.inventory-list{padding:13px;display:grid;gap:7px;max-height:610px;overflow:auto}.inventory-row{display:grid;grid-template-columns:1fr 70px 85px 77px;gap:8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018)}.inventory-row b{font-size:8px}.inventory-row span{font-size:6px;color:var(--muted);display:block;margin-top:4px}.inventory-row strong{font-size:9px}.readiness{display:flex;align-items:center;gap:5px}.readiness i{width:28px;height:4px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.readiness i:before{content:"";display:block;height:100%;width:var(--ready);background:linear-gradient(90deg,var(--blue),var(--cyan))}.readiness em{font-style:normal;font-size:6px}.inventory-row button{border:1px solid var(--line);background:rgba(255,255,255,.025);padding:6px 7px;border-radius:8px;font-size:6px;font-weight:900;cursor:pointer}
+.package-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);gap:13px}.package-builder{padding:18px}.package-need{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.018);padding:14px}.need-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.need-tag{font-size:7px;border:1px solid rgba(117,135,255,.18);background:rgba(117,135,255,.07);padding:6px 8px;border-radius:999px}.package-map{position:relative;height:355px;margin-top:12px;border:1px solid var(--line);border-radius:17px;background:radial-gradient(circle at center,rgba(117,135,255,.08),transparent 45%);overflow:hidden}.seller-cluster{position:absolute;border:1px solid var(--line2);border-radius:14px;background:rgba(10,16,25,.94);padding:10px;width:145px}.seller-cluster b{font-size:8px}.seller-cluster span{display:block;font-size:6px;color:var(--muted);margin-top:4px}.seller-cluster strong{display:block;color:var(--cyan);font-size:14px;margin-top:7px}.cluster-1{left:5%;top:12%}.cluster-2{right:6%;top:15%}.cluster-3{left:9%;bottom:12%}.cluster-4{right:10%;bottom:9%}.package-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:110px;height:110px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#182759,#0c1429 58%,#070b12);border:1px solid rgba(117,135,255,.28);box-shadow:0 0 45px rgba(82,102,255,.3)}.package-core strong{font-size:22px}.package-core span{font-size:6px;color:var(--muted)}.package-summary{padding:17px}.summary-rows{display:grid;gap:8px;margin-top:15px}.summary-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.045)}.summary-row span{font-size:7px;color:var(--muted)}.summary-row b{font-size:9px}.risk-card{margin-top:13px;padding:12px;border:1px solid rgba(255,200,117,.16);background:rgba(255,200,117,.045);border-radius:12px}.risk-card b{font-size:8px;color:#ffdda0}.risk-card p{font-size:7px;color:#9c8c73;line-height:1.5;margin:5px 0 0}
+.bridge-layout{display:grid;grid-template-columns:1fr 300px 1fr;gap:13px;align-items:start}.agent-column{padding:17px;min-height:570px}.agent-head{display:flex;align-items:center;gap:10px}.agent-head .vector-orb{width:34px;height:34px}.agent-head b{font-size:10px}.agent-head span{display:block;font-size:6px;color:var(--muted);margin-top:4px}.private-limit{margin:17px 0;padding:13px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.private-limit span{font-size:6px;color:var(--muted);letter-spacing:.1em}.private-limit strong{display:block;font-size:24px;margin-top:7px}.private-limit small{font-size:6px;color:#667284}.bridge-messages{display:grid;gap:8px}.agent-msg{padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018);font-size:8px;line-height:1.55}.agent-msg.pending{border-color:rgba(255,200,117,.18);background:rgba(255,200,117,.04)}.agent-msg.accepted{border-color:rgba(145,244,169,.18);background:rgba(145,244,169,.04)}.bridge-center{display:grid;gap:11px}.bridge-score-panel{padding:16px;text-align:center}.bridge-score-panel h3{font-size:10px;margin:0}.bridge-score-panel p{font-size:7px;color:var(--muted);line-height:1.5}.bridge-progress{height:7px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:15px 0}.bridge-progress i{display:block;height:100%;width:var(--bridge);background:linear-gradient(90deg,var(--blue),var(--cyan),var(--lime));transition:1s width}.bridge-structures{display:grid;gap:7px}.structure-card{padding:10px;border:1px solid var(--line);border-radius:11px;text-align:left;background:rgba(255,255,255,.018);cursor:pointer}.structure-card:hover,.structure-card.selected{border-color:rgba(117,135,255,.35);background:rgba(117,135,255,.08)}.structure-card b{font-size:8px}.structure-card span{display:block;font-size:6px;color:var(--muted);margin-top:4px}.bridge-timeline{padding:14px}.timeline-step{position:relative;padding-left:20px;padding-bottom:16px}.timeline-step:before{content:"";position:absolute;left:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#4d5869}.timeline-step:after{content:"";position:absolute;left:6.5px;top:12px;bottom:0;width:1px;background:var(--line)}.timeline-step:last-child:after{display:none}.timeline-step.done:before{background:var(--lime);box-shadow:0 0 9px var(--lime)}.timeline-step.active:before{background:var(--cyan);box-shadow:0 0 9px var(--cyan)}.timeline-step b{font-size:7px}.timeline-step span{display:block;font-size:6px;color:var(--muted);margin-top:3px}
+.close-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:13px}.close-flow{padding:18px}.close-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:16px 0}.close-step{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.close-step span{width:23px;height:23px;border-radius:8px;display:grid;place-items:center;background:rgba(117,135,255,.08);color:#aeb8ff;font-size:7px}.close-step b{display:block;font-size:7px;margin-top:8px}.close-step small{font-size:6px;color:var(--muted);display:block;margin-top:4px}.close-step.done{border-color:rgba(145,244,169,.18);background:rgba(145,244,169,.04)}.close-step.done span{background:rgba(145,244,169,.1);color:var(--lime)}.proof-upload{border:1px dashed var(--line2);border-radius:15px;padding:24px;text-align:center;background:rgba(255,255,255,.015);margin-top:13px}.proof-upload .upload-icon{width:45px;height:45px;border-radius:14px;margin:0 auto 11px;display:grid;place-items:center;background:rgba(117,135,255,.08);color:#aeb8ff}.proof-upload b{font-size:9px}.proof-upload p{font-size:7px;color:var(--muted);margin:6px 0 12px}.deal-card{padding:18px}.deal-hero{padding:14px;border:1px solid rgba(117,135,255,.18);background:linear-gradient(130deg,rgba(117,135,255,.11),rgba(67,221,255,.035));border-radius:14px}.deal-hero span{font-size:6px;color:#aeb8ff;letter-spacing:.12em}.deal-hero h3{font-size:15px;margin:7px 0 4px}.deal-hero p{font-size:7px;color:var(--muted);margin:0}.deal-lines{display:grid;gap:0;margin-top:13px}.deal-line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.045)}.deal-line span{font-size:7px;color:var(--muted)}.deal-line b{font-size:8px;text-align:right}.deal-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px;border:1px solid rgba(145,244,169,.16);background:rgba(145,244,169,.045);border-radius:12px}.deal-total span{font-size:7px;color:#9fb4a3}.deal-total strong{font-size:20px;color:#c8ffd2}.signature-row{display:flex;gap:8px;margin-top:12px}.signature{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px}.signature span{font-size:6px;color:var(--muted)}.signature b{display:block;font-size:8px;margin-top:5px}.signature i{font-style:normal;color:var(--lime)}
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.impact-hero{grid-column:span 3;padding:20px}.impact-score{display:flex;align-items:flex-end;justify-content:space-between;gap:18px}.impact-score h3{font-size:13px;margin:0}.impact-score p{font-size:8px;color:var(--muted);max-width:560px;line-height:1.5}.value-created{text-align:right}.value-created span{display:block;font-size:7px;color:var(--muted)}.value-created strong{font-size:36px;color:var(--lime)}.receipt-panel{padding:17px}.receipt-panel h3{font-size:10px;margin:0 0 12px}.receipt-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.07)}.receipt-row span{font-size:7px;color:var(--muted)}.receipt-row b{font-size:8px}.receipt-net{margin-top:12px;border:1px solid rgba(145,244,169,.16);background:rgba(145,244,169,.045);border-radius:11px;padding:11px}.receipt-net span{font-size:6px;color:#a6bbaa}.receipt-net strong{display:block;font-size:22px;color:#c8ffd2;margin-top:4px}.impact-chart{height:250px;margin-top:15px}.proof-cards{grid-column:span 4;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.proof-card{padding:14px}.proof-card span{font-size:6px;color:var(--muted);letter-spacing:.1em}.proof-card strong{display:block;font-size:22px;margin:8px 0 4px}.proof-card small{font-size:7px;color:var(--lime)}
+.investor-hero{padding:28px;min-height:270px;display:flex;align-items:flex-end;justify-content:space-between;gap:30px;background:radial-gradient(circle at 85% 10%,rgba(117,135,255,.16),transparent 33%),linear-gradient(145deg,rgba(18,27,42,.88),rgba(7,11,18,.9))}.investor-hero h1{font-size:43px;letter-spacing:-.06em;line-height:1.02;max-width:820px;margin:10px 0 0}.investor-hero h1 em{font-style:normal;color:var(--cyan)}.investor-hero p{font-size:9px;color:var(--muted);line-height:1.6;max-width:390px}.investor-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:13px}.investor-card{padding:17px}.investor-card h3{font-size:10px;margin:0 0 9px}.investor-card p{font-size:7px;color:var(--muted);line-height:1.55;margin:0}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}.moat-stack{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.moat{padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018)}.moat b{font-size:8px}.moat span{display:block;font-size:6px;color:var(--muted);line-height:1.45;margin-top:6px}.revenue-table{width:100%;border-collapse:collapse;margin-top:10px}.revenue-table td,.revenue-table th{padding:8px;border-bottom:1px solid rgba(255,255,255,.05);font-size:7px;text-align:left}.revenue-table th{color:#677285;font-weight:800}.revenue-table td:last-child{text-align:right;font-weight:900}.flywheel{height:260px;position:relative;margin-top:8px}.flywheel-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:105px;height:105px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#26377c,#111a3e 60%,#0a0f1b);border:1px solid rgba(117,135,255,.3);box-shadow:0 0 45px rgba(82,102,255,.3)}.flywheel-core b{font-size:9px}.flywheel-node{position:absolute;width:115px;padding:9px;border:1px solid var(--line);border-radius:11px;background:rgba(11,17,27,.9);text-align:center;font-size:7px}.fw1{left:3%;top:9%}.fw2{right:3%;top:9%}.fw3{right:2%;bottom:8%}.fw4{left:2%;bottom:8%}.investor-ask{display:flex;justify-content:space-between;align-items:center;gap:20px}.investor-ask h3{font-size:16px;margin:0}.investor-ask p{font-size:8px;color:var(--muted);margin:5px 0 0}.ask-amount{text-align:right}.ask-amount span{font-size:7px;color:var(--muted);display:block}.ask-amount strong{font-size:29px;color:var(--cyan)}
+.vector-dock{position:fixed;right:23px;bottom:22px;z-index:60;display:flex;align-items:flex-end;gap:10px}.vector-fab{position:relative;width:55px;height:55px;border-radius:19px;border:1px solid rgba(117,135,255,.3);background:#0a101a;display:grid;place-items:center;box-shadow:0 16px 45px rgba(0,0,0,.45),0 0 35px rgba(82,102,255,.18);cursor:pointer}.vector-fab i{position:absolute;right:6px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}.vector-dock-card{display:none;width:360px;padding:13px;border:1px solid var(--line2);background:rgba(9,14,23,.96);backdrop-filter:blur(24px);border-radius:16px;box-shadow:var(--shadow)}.vector-dock.open .vector-dock-card{display:block;animation:pop .2s ease}.vector-dock-card>div:first-child b{font-size:10px}.vector-dock-card>div:first-child span{display:block;font-size:7px;color:var(--muted);margin-top:3px}.vector-dock-card>button{position:absolute;right:14px;top:9px;border:0;background:transparent;color:#778396;cursor:pointer}.vector-input-row{display:flex;gap:7px;margin-top:11px}.vector-input-row input{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:10px;padding:9px;color:#fff;font-size:8px;outline:0}.vector-input-row button{border:0;border-radius:9px;background:linear-gradient(110deg,#7587ff,#54def6);color:#070a10;font-size:7px;font-weight:900;padding:0 11px;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;z-index:100}.modal.open{display:grid;place-items:center}.modal-backdrop{position:absolute;inset:0;background:rgba(1,3,6,.76);backdrop-filter:blur(12px)}.modal-card{position:relative;z-index:2;width:min(760px,calc(100vw - 30px));max-height:88vh;overflow:auto;border:1px solid var(--line2);border-radius:22px;background:#0b111b;box-shadow:var(--shadow);padding:21px;animation:modalIn .2s ease}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.modal-head h2{font-size:19px;margin:6px 0}.modal-head p{font-size:8px;color:var(--muted);line-height:1.5;margin:0}.modal-close{width:34px;height:34px;border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:10px;cursor:pointer}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.field label{display:block;font-size:7px;color:var(--muted);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#0a1018;border-radius:10px;padding:10px;color:#fff;font-size:8px;outline:0}.field textarea{min-height:90px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.progress{height:7px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:13px 0}.progress i{display:block;height:100%;width:var(--progress);background:linear-gradient(90deg,var(--blue),var(--cyan),var(--lime));transition:.5s width}.toast-stack{position:fixed;right:21px;top:88px;z-index:120;display:grid;gap:8px}.toast{width:330px;border:1px solid var(--line2);background:rgba(10,15,24,.95);backdrop-filter:blur(20px);border-radius:14px;padding:12px;box-shadow:var(--shadow2);display:grid;grid-template-columns:30px 1fr;gap:9px;animation:toastIn .25s ease}.toast-icon{width:30px;height:30px;border-radius:9px;background:rgba(145,244,169,.08);color:var(--lime);display:grid;place-items:center;font-size:10px}.toast b{font-size:8px}.toast p{font-size:7px;color:var(--muted);line-height:1.4;margin:4px 0 0}
+@keyframes blink{50%{opacity:.42;transform:scale(.85)}}@keyframes halo{50%{transform:scale(1.05);opacity:.7}}@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}@keyframes orb{50%{transform:translateY(-2px) scale(1.04);filter:saturate(1.25)}}@keyframes float{50%{transform:translateY(-8px)}}@keyframes bars{50%{transform:scaleY(.72);opacity:.75}}@keyframes scroll{80%{transform:translateY(10px);opacity:0}}@keyframes pop{from{opacity:0;transform:translateY(5px) scale(.98)}}@keyframes viewIn{from{opacity:0;transform:translateY(4px)}}@keyframes typing{50%{transform:translateY(-3px);background:#cbd5e5}}@keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}}@keyframes toastIn{from{opacity:0;transform:translateX(15px)}}
+@media(max-width:1180px){.intro-grid{grid-template-columns:1fr}.hero-system{min-height:610px}.intro-copy{max-width:900px}.float-a{left:2%}.float-b{right:2%}.app-shell.active{grid-template-columns:220px 1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}.command-grid,.vector-layout,.match-layout,.market-grid,.twin-layout,.package-layout,.close-layout{grid-template-columns:1fr}.bridge-layout{grid-template-columns:1fr}.bridge-center{order:-1}.impact-grid{grid-template-columns:repeat(2,1fr)}.impact-hero{grid-column:span 2}.receipt-panel{grid-column:span 2}.proof-cards{grid-column:span 2;grid-template-columns:repeat(2,1fr)}.span-4,.span-5,.span-7,.span-8{grid-column:span 6}.topbar{grid-template-columns:1fr minmax(220px,400px) auto}.opportunity-strip{grid-template-columns:1fr 1fr}.opportunity-strip .opp-card:last-child{grid-column:span 2}}
+@media(max-width:820px){.intro{padding:20px 17px}.intro-nav .intro-status,.quiet-btn{display:none}.intro-grid{padding-top:30px}.intro h1{font-size:60px}.intro-lede{font-size:15px}.hero-system{min-height:540px}.hero-console{padding:17px}.hero-score-wrap{grid-template-columns:115px 1fr;padding:15px}.hero-score{width:105px}.hero-score strong{font-size:31px}.limit-row{grid-template-columns:1fr}.bridge-line{display:none}.floating-card{display:none}.intro-proof{gap:20px}.intro-footer{font-size:9px}.scroll-cue{display:none}.app-shell.active{display:block}.rail{position:fixed;left:-270px;width:248px;transition:.25s left;box-shadow:var(--shadow)}.rail.mobile-open{left:0}.topbar{grid-template-columns:1fr auto;height:66px;padding:0 14px}.topbar-center{display:none}.mobile-menu{display:block}.quick-create{font-size:0;width:38px;padding:0}.quick-create span{font-size:17px;margin:0}.app-view{padding:16px 13px 85px}.metric-grid{grid-template-columns:1fr 1fr}.command-grid{grid-template-columns:1fr}.opportunity-strip{grid-template-columns:1fr}.opportunity-strip .opp-card:last-child{grid-column:auto}.compat-layout{grid-template-columns:105px 1fr}.score-gauge{width:98px}.score-gauge strong{font-size:28px}.map-stage{height:440px}.map-node{width:104px}.close-steps{grid-template-columns:1fr 1fr}.impact-grid{grid-template-columns:1fr}.impact-hero,.receipt-panel,.proof-cards{grid-column:span 1}.proof-cards{grid-template-columns:1fr 1fr}.investor-hero{flex-direction:column;align-items:flex-start}.investor-hero h1{font-size:34px}.investor-grid{grid-template-columns:1fr}.span-4,.span-5,.span-7,.span-8,.span-12{grid-column:span 1}.moat-stack{grid-template-columns:1fr 1fr}.vector-dock-card{width:calc(100vw - 94px)}.toast{width:calc(100vw - 30px)}.toast-stack{right:15px}.form-grid{grid-template-columns:1fr}.inventory-row{grid-template-columns:1fr 62px 60px}.inventory-row button{grid-column:span 3}.page-head{align-items:flex-start;flex-direction:column}.head-actions{width:100%;overflow:auto}.intro-actions{align-items:stretch}.primary-cta,.secondary-cta{width:100%}}
+@media(max-width:520px){.intro h1{font-size:49px}.intro-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.intro-proof strong{font-size:18px}.intro-proof span{font-size:8px}.hero-system{min-height:500px}.hero-score-wrap{grid-template-columns:1fr}.hero-score{margin:auto}.score-copy{text-align:center}.delta-row{justify-content:center}.vector-line{align-items:flex-start}.vector-line button{display:none}.metric-grid{grid-template-columns:1fr}.compat-layout{grid-template-columns:1fr}.score-gauge{margin:auto}.compat-copy{text-align:center}.factor-row{text-align:left}.opportunity-strip{grid-template-columns:1fr}.map-node{width:94px;padding:7px}.node-e{left:35%}.market-grid{grid-template-columns:1fr}.heat-grid{grid-template-columns:repeat(3,1fr)}.strategy-metrics{grid-template-columns:1fr}.close-steps{grid-template-columns:1fr}.proof-cards{grid-template-columns:1fr}.moat-stack{grid-template-columns:1fr}.persona-menu{position:fixed;left:14px;right:14px;top:75px}.vector-dock{right:13px;bottom:13px}.vector-fab{width:50px;height:50px}.vector-dock-card{position:fixed;left:13px;right:13px;bottom:74px;width:auto}.topbar-left h2{font-size:14px}}
+
+/* AeroLoop 2.0 interaction layer */
+.intelligence-ribbon{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 13px}.intelligence-ribbon>div{display:grid;grid-template-columns:8px 1fr;gap:2px 8px;align-items:center;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018)}.intelligence-ribbon b{font-size:7px}.intelligence-ribbon span{grid-column:2;font-size:6px;color:var(--muted)}.r-dot{width:7px;height:7px;border-radius:50%;background:#647083;box-shadow:0 0 8px currentColor}.r-dot.hot{background:var(--red);color:var(--red)}.r-dot.good{background:var(--lime);color:var(--lime)}.r-dot.gold{background:var(--gold);color:var(--gold)}.r-dot.blue{background:var(--cyan);color:var(--cyan)}
+.compact-head{padding:0;margin-bottom:12px}.compact-head:after{display:none}.panel-title-row h3,.panel-head h3{margin:0}.panel-title-row p{font-size:7px;color:var(--muted);margin:4px 0 0}.physics-stack{display:grid;gap:7px;margin-top:14px}.physics{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:9px;padding:9px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.physics>span{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(117,135,255,.07);font-size:7px;color:#aeb8ff}.physics b{font-size:8px}.physics small{font-size:6px;color:var(--muted);display:block;margin-top:3px}.physics strong{font-size:9px}.physics.good strong{color:var(--lime)}.physics.warn strong{color:var(--gold)}.time-forecast{padding-top:10px}.time-forecast strong{font-size:27px;display:block}.time-forecast>span{font-size:7px;color:var(--muted)}.sparkline{width:100%;height:82px;margin-top:9px;overflow:visible}.full{width:100%;margin-top:12px}.match-side,.package-side{display:grid;gap:13px;align-content:start}.private-shield{display:grid;grid-template-columns:1fr 38px 1fr;align-items:center;gap:8px;margin-top:14px;padding:11px;border:1px solid rgba(117,135,255,.16);background:rgba(117,135,255,.045);border-radius:13px;text-align:center}.private-shield span{display:block;font-size:6px;color:var(--muted);letter-spacing:.1em}.private-shield strong{display:block;font-size:17px;margin:4px 0}.private-shield small{font-size:6px;color:#667284}.shield-icon{font-size:17px!important;color:var(--cyan)!important}.sim-row{margin-top:13px}.sim-row label{display:flex;justify-content:space-between;font-size:7px;color:var(--muted)}.sim-row label b{color:#dbe2f2}.sim-outcome{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.sim-outcome>div{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.sim-outcome span{font-size:6px;color:var(--muted);display:block}.sim-outcome strong{font-size:13px;display:block;margin-top:5px}.switch-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.model-switch{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(255,255,255,.018);border-radius:11px;padding:9px;text-align:left;cursor:pointer}.model-switch i{width:20px;height:12px;border-radius:999px;background:#263142;position:relative}.model-switch i:after{content:"";position:absolute;left:2px;top:2px;width:8px;height:8px;border-radius:50%;background:#738096;transition:.2s}.model-switch.on{border-color:rgba(145,244,169,.18);background:rgba(145,244,169,.04)}.model-switch.on i{background:rgba(145,244,169,.2)}.model-switch.on i:after{left:10px;background:var(--lime)}.model-switch span{font-size:7px}.model-switch b{font-size:7px;color:var(--lime)}.path-legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:10px}.path-legend span{font-size:6px;color:var(--muted);display:flex;align-items:center;gap:5px}.path-legend i{width:7px;height:7px;border-radius:50%;background:#778297}.path-legend i.good{background:var(--lime);box-shadow:0 0 8px var(--lime)}.path-legend i.near{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.pulse-index small{font-size:7px;color:var(--lime);display:block;margin-top:3px}.range-stack{display:grid;gap:13px;margin-top:15px}.range-stack>div{position:relative;padding-bottom:12px}.range-stack span{font-size:7px;color:var(--muted)}.range-stack b{float:right;font-size:8px}.range-stack i{position:absolute;left:0;right:0;bottom:0;height:5px;border-radius:999px;background:rgba(255,255,255,.055)}.range-stack i:after{content:"";position:absolute;left:var(--from);right:calc(100% - var(--to));height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--cyan));box-shadow:0 0 10px rgba(67,221,255,.22)}.method-note{margin-top:16px;border:1px solid rgba(255,200,117,.14);background:rgba(255,200,117,.035);border-radius:11px;padding:10px}.method-note b{font-size:8px;color:#ffdda0}.method-note p{font-size:6px;color:#a28f72;line-height:1.5;margin:4px 0 0}.lower-market{margin-top:13px}.impact-comparison{display:grid;grid-template-columns:1fr 1fr;gap:12px}.impact-comparison>div{padding:12px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.impact-comparison span{font-size:7px;color:var(--muted)}.impact-comparison strong{font-size:20px;display:block;margin-top:6px}.heat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.heat-grid>div{position:relative;padding:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.heat-grid>div:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(67,221,255,calc(var(--heat)/600)),transparent)}.heat-grid b,.heat-grid span{position:relative}.heat-grid b{font-size:8px;display:block}.heat-grid span{font-size:6px;color:var(--muted)}.heat-grid i{position:relative;display:block;height:4px;margin-top:8px;border-radius:999px;background:rgba(255,255,255,.06)}.heat-grid i:before{content:"";display:block;width:var(--heat);height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.forecast-badge{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);text-align:right}.forecast-badge span{font-size:6px!important}.forecast-badge b{font-size:10px;display:block;margin-top:5px}.forecast-chart svg,.impact-chart svg{width:100%;height:100%}.strategy-explanation{display:flex;align-items:center;gap:10px;margin-top:13px;padding:11px;border:1px solid rgba(117,135,255,.16);background:rgba(117,135,255,.045);border-radius:12px}.strategy-explanation b{font-size:8px}.strategy-explanation p{font-size:7px;color:var(--muted);line-height:1.5;margin:4px 0 0}.package-side{display:grid;gap:13px}.package-beam{position:absolute;left:50%;top:50%;width:150px;height:1px;transform-origin:left center;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.55}.package-beam.b1{transform:rotate(-142deg)}.package-beam.b2{transform:rotate(-36deg)}.package-beam.b3{transform:rotate(142deg)}.package-beam.b4{transform:rotate(35deg)}.package-econ{display:grid;gap:8px;margin-top:12px}.package-econ div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.045)}.package-econ span{font-size:7px;color:var(--muted)}.package-econ b{font-size:9px}.package-econ .good b{color:var(--lime)}
+.agent-command{margin-top:15px}.bridge-number{font-size:48px;letter-spacing:-.07em;font-weight:900;margin-top:9px}.close-copy{font-size:8px;color:var(--muted)}.close-assurances{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.close-assurances>div{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.close-assurances b{font-size:7px}.close-assurances span{font-size:6px;color:var(--muted);line-height:1.5;display:block;margin-top:4px}.proof-upload.uploaded{border-color:rgba(145,244,169,.25);background:rgba(145,244,169,.04)}.outcome-chain{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:13px}.outcome-chain>div{flex:1;padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.outcome-chain>div span{font-size:6px;color:var(--cyan)}.outcome-chain b{font-size:8px;display:block;margin-top:5px}.outcome-chain small{font-size:6px;color:var(--muted);display:block;margin-top:4px}.outcome-chain>i{font-style:normal;color:#556173}.big-thesis{margin-top:16px;padding:13px;border:1px solid rgba(67,221,255,.14);background:rgba(67,221,255,.035);border-radius:12px}.big-thesis b{display:block;font-size:13px}.big-thesis span{display:block;font-size:7px;color:var(--muted);margin-top:5px}.investor-metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:11px 0}.investor-metrics div,.defense-grid div{padding:9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018)}.investor-metrics span,.defense-grid span{font-size:6px;color:var(--muted);display:block}.investor-metrics b,.defense-grid b{font-size:9px;display:block;margin-top:4px}.defense-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}.investor-cta{display:flex;justify-content:space-between;align-items:center;gap:20px}.investor-cta h3{font-size:16px;max-width:900px;margin:7px 0 0}.investor-cta .primary-cta{flex:none}.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.quick-grid button{display:grid;grid-template-columns:38px 1fr;gap:2px 10px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018);cursor:pointer}.quick-grid button:hover{border-color:rgba(67,221,255,.25);background:rgba(67,221,255,.04)}.quick-grid button>span{grid-row:1/3;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(117,135,255,.08);color:#aeb8ff}.quick-grid b{font-size:9px}.quick-grid small{font-size:6px;color:var(--muted)}.tour-story{display:grid;gap:7px;margin-top:17px}.tour-step{display:grid;grid-template-columns:30px 1fr;gap:9px;padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.tour-step>span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(117,135,255,.08);font-size:7px}.tour-step b{font-size:8px}.tour-step p{font-size:7px;color:var(--muted);margin:4px 0 0;line-height:1.45}.path-modal,.inventory-modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:17px}.path-modal>div,.inventory-modal-grid>div{padding:12px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.path-modal span,.inventory-modal-grid span{font-size:6px;color:var(--muted);display:block}.path-modal b,.inventory-modal-grid b{font-size:10px;display:block;margin-top:5px}.pay-options{display:grid;gap:8px;margin-top:16px}.pay-options button{padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018);text-align:left;cursor:pointer}.pay-options b{font-size:9px}.pay-options span{font-size:7px;color:var(--muted);display:block;margin-top:4px}.payment-total{margin-top:13px;padding:13px;border:1px solid rgba(145,244,169,.16);background:rgba(145,244,169,.04);border-radius:12px}.payment-total span{font-size:7px;color:var(--muted)}.payment-total strong{font-size:24px;display:block;margin-top:5px}.payment-total small{font-size:6px;color:var(--muted)}.alert-list{display:grid;gap:8px;margin-top:16px}.alert-list div{padding:11px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.alert-list b{font-size:8px}.alert-list span{font-size:7px;color:var(--muted);display:block;margin-top:4px}.research-orbit{height:165px;position:relative;display:grid;place-items:center}.orbit-core{position:relative;z-index:2;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#26377c,#111a3e 62%,#0a1018);border:1px solid rgba(117,135,255,.24);box-shadow:0 0 35px rgba(82,102,255,.25)}.orbit-core b{font-size:16px}.orbit-core small{font-size:6px;color:var(--muted)}.research-orbit>i{position:absolute;border-radius:50%;border:1px solid rgba(117,135,255,.13)}.research-orbit .o1{width:135px;height:135px}.research-orbit .o2{width:155px;height:155px;border-style:dashed;animation:spin 22s linear infinite}.research-orbit .o3{width:75px;height:75px;border-color:rgba(67,221,255,.18)}.source-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}.source-list span{font-size:6px;color:var(--muted)}.mini-evidence{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.mini-evidence span{padding:7px;border:1px solid var(--line);border-radius:8px;font-size:6px;color:var(--muted)}.mini-evidence strong{display:block;font-size:8px;color:#fff;margin-top:4px}.toggle.on:after{left:17px;background:var(--lime)}.toggle:after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;left:3px;top:2px;background:#7c8797;transition:.2s}.persona-menu button.active{background:rgba(117,135,255,.08);border-color:rgba(117,135,255,.2)}
+.rail-mini .app-shell.active{grid-template-columns:86px 1fr}.rail-mini .rail{width:86px}.rail-mini .brand-word,.rail-mini .persona-meta,.rail-mini #personaToggle,.rail-mini .rail-label,.rail-mini .nav-item b,.rail-mini .nav-count,.rail-mini .system-state small{display:none}.rail-mini .persona-switcher{grid-template-columns:1fr;justify-items:center}.rail-mini .nav-item{justify-content:center}.rail-mini .system-state{padding:8px}.rail-mini .system-state span{font-size:0}.rail-mini .system-state span i{display:block}
+@media(max-width:1180px){.intelligence-ribbon{grid-template-columns:1fr 1fr}.impact-comparison{grid-template-columns:1fr}.investor-cta{align-items:flex-start;flex-direction:column}.outcome-chain{display:grid;grid-template-columns:1fr}.outcome-chain>i{display:none}}
+@media(max-width:820px){.intelligence-ribbon{grid-template-columns:1fr}.private-shield{grid-template-columns:1fr}.shield-icon{transform:rotate(90deg)}.switch-grid,.close-assurances,.quick-grid,.path-modal,.inventory-modal-grid,.defense-grid{grid-template-columns:1fr}.source-list{grid-template-columns:1fr}.investor-cta .primary-cta{width:100%}.impact-comparison{grid-template-columns:1fr}.range-stack b{float:none;display:block;margin-top:3px}.model-switch{grid-template-columns:20px 1fr auto}}
+@media(max-width:520px){.mini-evidence,.sim-outcome{grid-template-columns:1fr}.intelligence-ribbon>div{padding:9px}.private-shield strong{font-size:15px}.investor-metrics{grid-template-columns:1fr}.outcome-chain{display:grid}.package-map{height:440px}.cluster-1{left:4%;top:5%}.cluster-2{right:4%;top:27%}.cluster-3{left:4%;bottom:27%}.cluster-4{right:4%;bottom:5%}.package-core{width:90px;height:90px}.impact-comparison strong{font-size:17px}}
+
+</style>
+</head>
+<body>
+  <canvas id="ambientCanvas" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <section id="intro" class="intro active">
+    <div class="intro-nav">
+      <a class="brand" href="#" aria-label="AeroLoop home">
+        <span class="brand-mark"><i></i><b></b></span>
+        <span class="brand-word">AEROLOOP</span>
+        <span class="brand-version">2.0</span>
+      </a>
+      <div class="intro-status"><span></span> INVESTOR BUILD · LIVE PRODUCT SIMULATION</div>
+      <button class="quiet-btn" data-action="open-investor">Investor thesis</button>
+    </div>
+
+    <div class="intro-grid">
+      <div class="intro-copy">
+        <div class="eyebrow"><span class="pulse-dot"></span> VECTOR ADVISOR OS</div>
+        <h1>The aviation deal<br><em>finds you.</em></h1>
+        <p class="intro-lede">A seller provides inventory and the lowest acceptable outcome. A buyer states the exact requirement and highest acceptable outcome. Vector continuously analyzes every permitted signal, improves both sides’ compatibility, and creates the closest realistic transaction—without exposing private limits.</p>
+        <div class="intro-actions">
+          <button class="primary-cta" data-action="enter-demo">Launch live demo <span>↗</span></button>
+          <button class="secondary-cta" data-action="watch-flow"><span class="play-dot">▶</span> Watch the 90-second story</button>
+        </div>
+        <div class="intro-proof">
+          <div><strong>5</strong><span>complete personas</span></div>
+          <div><strong>12</strong><span>interactive product systems</span></div>
+          <div><strong>0%</strong><span>private limits exposed</span></div>
+        </div>
+      </div>
+
+      <div class="hero-system">
+        <div class="system-halo"></div>
+        <div class="hero-console glass-panel">
+          <div class="console-head">
+            <div><span class="console-kicker">LIVE OPPORTUNITY</span><h3>7003110-901 · EFIS Display Unit</h3></div>
+            <div class="live-pill"><i></i> ACTIVE</div>
+          </div>
+          <div class="hero-score-wrap">
+            <div class="hero-score" style="--score:78">
+              <div><strong>78</strong><span>matchability</span></div>
+            </div>
+            <div class="score-copy">
+              <p>Vector found a PO-ready buyer and a confirmed seller. Two small changes unlock a direct match.</p>
+              <div class="delta-row"><span>+8</span> upload current tag scan</div>
+              <div class="delta-row"><span>+6</span> seller includes freight</div>
+            </div>
+          </div>
+          <div class="limit-row">
+            <div class="limit-card buyer"><span>BUYER MAXIMUM</span><strong>$18,000</strong><small>private · PO ready</small></div>
+            <div class="bridge-line"><i></i><span>$500 gap</span><i></i></div>
+            <div class="limit-card seller"><span>SELLER MINIMUM</span><strong>$18,500</strong><small>private · ship today</small></div>
+          </div>
+          <div class="vector-line"><span class="vector-orb"></span><div><b>Vector recommendation</b><p>Bridge the gap with freight inclusion and a 90-day warranty extension. No private limit changes required.</p></div><button data-action="enter-demo">View strategy</button></div>
+        </div>
+
+        <div class="floating-card float-a">
+          <span>VERIFIED VALUE CREATED</span>
+          <strong>$186,420</strong>
+          <small>across simulated portfolio</small>
+        </div>
+        <div class="floating-card float-b">
+          <span>TIME TO QUALIFIED MATCH</span>
+          <strong>2.4 days</strong>
+          <small>↓ 71% with Vector</small>
+        </div>
+        <div class="floating-card float-c">
+          <span>DEMAND SIGNAL</span>
+          <div class="mini-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <small>Falcon avionics · accelerating</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="intro-footer">
+      <span>Built for an expensive industry.</span>
+      <strong>Priced for the people who actually keep it moving.</strong>
+      <div class="scroll-cue"><i></i> INTERACTIVE DEMO</div>
+    </div>
+  </section>
+
+  <section id="app" class="app-shell">
+    <aside class="rail">
+      <div class="rail-top">
+        <button class="brand compact" data-action="go-home" aria-label="AeroLoop landing">
+          <span class="brand-mark"><i></i><b></b></span>
+          <span class="brand-word">AEROLOOP</span>
+        </button>
+        <button id="railCollapse" class="rail-collapse" aria-label="Collapse navigation">⌁</button>
+      </div>
+
+      <div class="persona-switcher">
+        <div class="persona-avatar" id="personaAvatar">DM</div>
+        <div class="persona-meta"><b id="personaName">Denis · Seller</b><span id="personaOrg">Jet Geeks Aviation</span></div>
+        <button id="personaToggle">⌄</button>
+        <div id="personaMenu" class="persona-menu">
+          <button data-persona="seller"><i class="persona-dot seller"></i><span><b>Seller</b><small>Inventory & liquidity</small></span></button>
+          <button data-persona="buyer"><i class="persona-dot buyer"></i><span><b>Buyer</b><small>Sourcing & acquisition</small></span></button>
+          <button data-persona="partner"><i class="persona-dot partner"></i><span><b>Sales Partner</b><small>Commission missions</small></span></button>
+          <button data-persona="repair"><i class="persona-dot repair"></i><span><b>Repair Station</b><small>Capability & open bench</small></span></button>
+          <button data-persona="investor"><i class="persona-dot investor"></i><span><b>Investor</b><small>Economics & moat</small></span></button>
+        </div>
+      </div>
+
+      <nav class="rail-nav">
+        <span class="rail-label">INTELLIGENCE</span>
+        <button class="nav-item active" data-view="command"><span class="nav-glyph">⌂</span><b>Command</b><i class="nav-count">4</i></button>
+        <button class="nav-item" data-view="vector"><span class="nav-glyph">✦</span><b>Vector Advisor</b><i class="nav-live"></i></button>
+        <button class="nav-item" data-view="match"><span class="nav-glyph">◎</span><b>Match Engine</b><i class="nav-count">8</i></button>
+        <button class="nav-item" data-view="market"><span class="nav-glyph">⌁</span><b>Market Pulse</b></button>
+        <span class="rail-label">EXECUTION</span>
+        <button class="nav-item" data-view="inventory"><span class="nav-glyph">▦</span><b>Inventory Twin</b></button>
+        <button class="nav-item" data-view="packages"><span class="nav-glyph">⬡</span><b>Package Hunter</b><i class="nav-count hot">3</i></button>
+        <button class="nav-item" data-view="bridge"><span class="nav-glyph">⇄</span><b>Bridge Room</b></button>
+        <button class="nav-item" data-view="close"><span class="nav-glyph">✓</span><b>Verified Close</b></button>
+        <span class="rail-label">PROOF</span>
+        <button class="nav-item" data-view="impact"><span class="nav-glyph">↗</span><b>Impact Ledger</b></button>
+        <button class="nav-item" data-view="investor"><span class="nav-glyph">◆</span><b>Investor View</b></button>
+      </nav>
+
+      <div class="rail-bottom">
+        <div class="system-state"><span><i></i> VECTOR ONLINE</span><small>14,218 signals processed today</small></div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu" id="mobileMenu">☰</button>
+          <div><span id="viewKicker">SELLER COMMAND</span><h2 id="viewTitle">Good morning, Denis.</h2></div>
+        </div>
+        <div class="topbar-center">
+          <label class="universal-search"><span>⌕</span><input id="globalSearch" placeholder="Ask Vector or search any part, company, capability…" /><kbd>⌘ K</kbd></label>
+        </div>
+        <div class="topbar-right">
+          <button class="top-icon" data-action="show-alerts">◔<i></i></button>
+          <button class="quick-create" data-action="quick-create"><span>＋</span> New opportunity</button>
+        </div>
+      </header>
+
+      <div id="view-command" class="app-view active"></div>
+      <div id="view-vector" class="app-view"></div>
+      <div id="view-match" class="app-view"></div>
+      <div id="view-market" class="app-view"></div>
+      <div id="view-inventory" class="app-view"></div>
+      <div id="view-packages" class="app-view"></div>
+      <div id="view-bridge" class="app-view"></div>
+      <div id="view-close" class="app-view"></div>
+      <div id="view-impact" class="app-view"></div>
+      <div id="view-investor" class="app-view"></div>
+
+      <div class="vector-dock" id="vectorDock">
+        <button class="vector-fab" id="vectorFab"><span class="vector-orb large"></span><i></i></button>
+        <div class="vector-dock-card">
+          <div><b>Ask Vector</b><span>Commercial strategy, market signals, or next best action</span></div>
+          <button id="vectorDockClose">×</button>
+          <div class="vector-input-row"><input id="vectorQuickInput" placeholder="What should I do with 7003110-901 today?" /><button data-action="quick-vector-send">Send</button></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <div id="modal" class="modal" aria-hidden="true"><div class="modal-backdrop" data-action="close-modal"></div><div id="modalCard" class="modal-card"></div></div>
+  <div id="toastStack" class="toast-stack"></div>
+  <script>
+(() => {
+  'use strict';
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+  const money = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  const fmt = (n) => new Intl.NumberFormat('en-US').format(Math.round(n));
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+  const personas = {
+    seller: { initials: 'DM', name: 'Denis · Seller', org: 'Jet Geeks Aviation', kicker: 'SELLER COMMAND', title: 'Good morning, Denis.' },
+    buyer: { initials: 'AR', name: 'Ariana · Buyer', org: 'Northstar Charter', kicker: 'BUYER COMMAND', title: 'Your sourcing desk is ahead of schedule.' },
+    partner: { initials: 'JM', name: 'Jordan · Partner', org: 'Independent Aviation Sales', kicker: 'PARTNER COMMAND', title: 'Three authorized missions are ready.' },
+    repair: { initials: 'RS', name: 'Riley · Repair', org: 'AeroTech Components', kicker: 'REPAIR COMMAND', title: 'Your open bench is matching live demand.' },
+    investor: { initials: 'IV', name: 'Investor View', org: 'AeroLoop Capital Story', kicker: 'INVESTOR INTELLIGENCE', title: 'A new transaction layer for aviation.' }
+  };
+
+  const inventory = [
+    { pn: '7003110-901', desc: 'EFIS Display Unit', platform: 'Hawker 800XP', condition: 'SV', docs: 82, price: 22500, floor: 18500, demand: 94, age: 41, availability: 'Confirmed today' },
+    { pn: 'NF0075-667', desc: 'Ice Detector', platform: 'Falcon / Learjet', condition: 'SV', docs: 91, price: 5200, floor: 3900, demand: 78, age: 27, availability: 'Confirmed 2h ago' },
+    { pn: 'C734-01-030', desc: 'Battery Pack', platform: 'Business aviation', condition: 'NE', docs: 76, price: 1450, floor: 950, demand: 66, age: 63, availability: 'Confirmed today' },
+    { pn: '7510784-904', desc: 'COM Cluster Module', platform: 'Learjet 60', condition: 'AR', docs: 58, price: 8300, floor: 6100, demand: 72, age: 88, availability: 'Needs reconfirmation' },
+    { pn: 'GC331-0003-7', desc: 'Windshield Assembly', platform: 'Hawker', condition: 'FN', docs: 69, price: 34500, floor: 26800, demand: 88, age: 16, availability: 'Confirmed 38m ago' },
+    { pn: '604-33030-6', desc: 'Windshield Assembly', platform: 'Challenger', condition: 'FN', docs: 84, price: 28900, floor: 23400, demand: 83, age: 33, availability: 'Confirmed today' }
+  ];
+
+  const matches = [
+    { id: 'M-1048', pn: '7003110-901', desc: 'EFIS Display Unit', buyer: 'Verified Part 135 operator', seller: 'Verified Northeast distributor', score: 78, buyerMax: 18000, sellerMin: 18500, docs: 72, condition: 100, structure: 100, logistics: 74, readiness: 100, gap: 500, type: 'Near Match', eta: '2–5 days' },
+    { id: 'M-1049', pn: 'NF0075-667', desc: 'Ice Detector', buyer: 'Falcon service center', seller: 'Jet Geeks Aviation', score: 92, buyerMax: 4100, sellerMin: 3900, docs: 91, condition: 100, structure: 100, logistics: 95, readiness: 100, gap: -200, type: 'Exact Match', eta: 'Today' },
+    { id: 'M-1050', pn: '604-33030-6', desc: 'Windshield Assembly', buyer: 'Corporate flight department', seller: 'Verified consignor', score: 84, buyerMax: 24750, sellerMin: 23400, docs: 84, condition: 100, structure: 100, logistics: 82, readiness: 92, gap: -1350, type: 'Qualified Match', eta: '1–3 days' },
+    { id: 'M-1051', pn: '7510784-904', desc: 'COM Cluster Module', buyer: 'Learjet MRO', seller: 'Private inventory owner', score: 63, buyerMax: 5600, sellerMin: 6100, docs: 58, condition: 86, structure: 100, logistics: 77, readiness: 78, gap: 500, type: 'Bridge Mode', eta: '5–11 days' },
+    { id: 'M-1052', pn: 'C734-01-030', desc: 'Battery Pack', buyer: 'AOG maintenance provider', seller: 'Jet Geeks Aviation', score: 88, buyerMax: 1075, sellerMin: 950, docs: 76, condition: 100, structure: 100, logistics: 100, readiness: 95, gap: -125, type: 'FastClose', eta: 'Today' }
+  ];
+
+  const state = {
+    persona: 'seller',
+    view: 'command',
+    selectedMatch: 0,
+    buyerMax: 18000,
+    sellerMin: 18500,
+    docs: 72,
+    freight: false,
+    warranty: false,
+    confirmed: true,
+    selectedStructure: 'freight',
+    bridgeScore: 78,
+    twinStrategy: 'advisor',
+    packageBuilt: false,
+    closeStep: 1,
+    proofUploaded: false,
+    signed: false,
+    verified: false,
+    recommendationsAccepted: new Set(),
+    advisorAggression: 72,
+    priceFlexibility: 34,
+    chat: [
+      { who: 'agent', text: 'Good morning, Denis. I processed 14,218 market, availability, documentation, and demand signals. Four actions can materially improve your outcomes today.' },
+      { who: 'agent', text: 'Your highest-impact opportunity is 7003110-901. You can move from 78% to 92% compatibility without changing your confidential floor.', analysis: true }
+    ]
+  };
+
+  function calculateMatchScore() {
+    const priceGap = state.sellerMin - state.buyerMax;
+    let priceScore;
+    if (priceGap <= 0) priceScore = 20;
+    else {
+      const gapPct = priceGap / state.sellerMin;
+      priceScore = clamp(20 - gapPct * 120, 2, 19);
+    }
+    const identity = 20;
+    const condition = 15;
+    const docsScore = state.docs / 100 * 20;
+    const structure = 7 + (state.freight ? 1.5 : 0) + (state.warranty ? 1.5 : 0);
+    const logistics = 7.5 + (state.freight ? 2.5 : 0);
+    const readiness = state.confirmed ? 5 : 2;
+    return Math.round(clamp(identity + condition + docsScore + priceScore + structure + logistics + readiness, 0, 100));
+  }
+
+  function projectedDays(score = calculateMatchScore()) {
+    if (score >= 95) return 'Same day';
+    if (score >= 85) return '1–3 days';
+    if (score >= 70) return '3–8 days';
+    if (score >= 55) return '8–21 days';
+    return '21+ days';
+  }
+
+  function enterDemo(persona = 'seller', view = 'command') {
+    state.persona = persona;
+    state.view = view;
+    $('#intro').classList.remove('active');
+    $('#app').classList.add('active');
+    syncPersona();
+    switchView(view);
+    showToast('AeroLoop 2.0 is live', 'Every control in this simulation is interactive.');
+  }
+
+  function goHome() {
+    $('#app').classList.remove('active');
+    $('#intro').classList.add('active');
+  }
+
+  function syncPersona() {
+    const p = personas[state.persona];
+    $('#personaAvatar').textContent = p.initials;
+    $('#personaName').textContent = p.name;
+    $('#personaOrg').textContent = p.org;
+    $('#viewKicker').textContent = p.kicker;
+    $('#viewTitle').textContent = p.title;
+    $$('#personaMenu button').forEach(b => b.classList.toggle('active', b.dataset.persona === state.persona));
+    renderAll();
+  }
+
+  function switchView(view) {
+    state.view = view;
+    $$('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    $$('.app-view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
+    if (window.innerWidth <= 820) $('.rail').classList.remove('mobile-open');
+    const titles = {
+      command: ['DAILY INTELLIGENCE', personas[state.persona].title],
+      vector: ['VECTOR ADVISOR OS', 'Your private commercial strategist.'],
+      match: ['PRIVATE MATCH ENGINE', 'Every viable path, ranked and explained.'],
+      market: ['MARKET PULSE', 'Demand, liquidity, pricing activity, and time-to-close.'],
+      inventory: ['INVENTORY REVENUE TWIN', 'Forecast every strategy before changing a listing.'],
+      packages: ['PACKAGE HUNTER', 'Assemble a discounted acquisition across multiple sellers.'],
+      bridge: ['ADVISOR-TO-ADVISOR BRIDGE', 'Create the deal without exposing private limits.'],
+      close: ['VERIFIED CLOSE', 'Turn a completed transaction into proof and trusted data.'],
+      impact: ['ADVISOR IMPACT LEDGER', 'See exactly what changed because AeroLoop was involved.'],
+      investor: ['INVESTOR INTELLIGENCE', 'The transaction operating system for aviation aftermarket commerce.']
+    };
+    $('#viewKicker').textContent = titles[view][0];
+    $('#viewTitle').textContent = titles[view][1];
+  }
+
+  function pageHead(kicker, title, copy, actions = '') {
+    return `<div class="page-head"><div><span class="kicker">${kicker}</span><h1>${title}</h1><p>${copy}</p></div><div class="head-actions">${actions}</div></div>`;
+  }
+
+  function metric(label, value, sub, trend = '') {
+    return `<div class="metric-card"><span class="metric-label">${label}</span><div class="metric-value">${value}</div><span class="metric-sub">${sub}</span>${trend ? `<span class="metric-trend">${trend}</span>` : ''}</div>`;
+  }
+
+  function scoreGauge(score, label = 'MATCHABILITY', className = 'score-gauge') {
+    return `<div class="${className}" style="--score:${score}"><div><strong>${score}</strong><span>${label}</span></div></div>`;
+  }
+
+  function factors(score) {
+    const priceScore = Math.round(clamp(20 - Math.max(0, state.sellerMin - state.buyerMax) / state.sellerMin * 120, 2, 20));
+    return [
+      ['Identity / applicability', 100, '20'],
+      ['Condition', 100, '15'],
+      ['Documents / trace', state.docs, Math.round(state.docs * .2)],
+      ['Price compatibility', priceScore * 5, priceScore],
+      ['Structure', state.freight || state.warranty ? 94 : 70, state.freight || state.warranty ? '9' : '7'],
+      ['Logistics', state.freight ? 100 : 75, state.freight ? '10' : '8']
+    ].map(([label, pct, pts]) => `<div class="factor-row"><label>${label}</label><span class="factor-bar"><i style="width:${pct}%"></i></span><b>+${pts}</b></div>`).join('');
+  }
+
+  function sparkline(values, color = '#43ddff') {
+    const w = 320, h = 90, max = Math.max(...values), min = Math.min(...values), range = max - min || 1;
+    const pts = values.map((v, i) => `${(i / (values.length - 1)) * w},${h - ((v - min) / range) * (h - 12) - 6}`).join(' ');
+    return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="sg${values[0]}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><polygon points="0,${h} ${pts} ${w},${h}" fill="url(#sg${values[0]})"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.2" vector-effect="non-scaling-stroke"/></svg>`;
+  }
+
+  function renderCommand() {
+    const score = calculateMatchScore();
+    const profiles = {
+      seller: {
+        metrics: [
+          ['QUALIFIED DEMAND', '$286K', 'matched to current inventory', '+18% today'],
+          ['PORTFOLIO MATCHABILITY', '74%', 'up from 58% before Vector', '+16 pts'],
+          ['PROJECTED RECOVERY', '$361K–$432K', 'Advisor Optimized strategy', '+$41K'],
+          ['TIME SAVED', '46.8 hrs', 'sourcing and sales work avoided', 'this month']
+        ],
+        message: `Four actions can unlock <em>$86,000 in qualified demand</em> today. No confidential minimum changes are required.`,
+        opportunities: matches.slice(0, 3)
+      },
+      buyer: {
+        metrics: [
+          ['ACTIVE REQUIREMENTS', '8', 'six have qualified paths', '2 new'],
+          ['PURCHASE EXPOSURE SAVED', '$41,800', 'versus comparable quote structures', '+$9.4K'],
+          ['AVERAGE MATCH TIME', '2.7 days', 'down from 9.6 days', '↓72%'],
+          ['RFQS AVOIDED', '67', 'through one-to-many private matching', 'this month']
+        ],
+        message: `A near-match became available overnight. One documentation adjustment unlocks an <em>82% qualified path</em> without increasing your private maximum.`,
+        opportunities: [matches[0], matches[2], matches[4]]
+      },
+      partner: {
+        metrics: [
+          ['AUTHORIZED PIPELINE', '$428K', 'seller-approved inventory', '+$62K'],
+          ['EARNED COMMISSIONS', '$18,450', 'verified and attributed', '+$3.2K'],
+          ['ACTIVE MISSIONS', '12', 'three priority opportunities', '3 hot'],
+          ['INTRODUCTION QUALITY', '91%', 'accepted by verified sellers', '+7 pts']
+        ],
+        message: `Three seller-authorized missions now match companies in your network. The strongest could generate <em>$4,750 in disclosed commissions</em>.`,
+        opportunities: [matches[2], matches[1], matches[3]]
+      },
+      repair: {
+        metrics: [
+          ['MATCHED REPAIR DEMAND', '$184K', 'within current capabilities', '+$27K'],
+          ['OPEN BENCH UTILIZATION', '86%', 'up from 63%', '+23 pts'],
+          ['QUOTE WIN RATE', '44%', 'when True Cost Card is used', '+12%'],
+          ['TURNAROUND CONFIDENCE', '92%', 'based on verified closes', '+4 pts']
+        ],
+        message: `Four buyers are comparing replacement against repair. Publishing one open bench slot places your shop inside <em>$73,000 of active demand</em>.`,
+        opportunities: [matches[3], matches[1], matches[4]]
+      },
+      investor: {
+        metrics: [
+          ['SIMULATED GMV', '$12.5M', 'annualized scale scenario', '+37%'],
+          ['RECURRING REVENUE', '$175K', 'monthly scale scenario', 'software-led'],
+          ['VERIFIED VALUE CREATED', '$186K', 'within seeded demo cohort', 'auditable'],
+          ['DATA MOATS', '4', 'evidence, opportunity, reliability, outcomes', 'compounding']
+        ],
+        message: `AeroLoop converts private commercial intent into <em>verified transaction intelligence</em>—then learns which recommendation caused the outcome.`,
+        opportunities: matches.slice(0, 3)
+      }
+    };
+    const profile = profiles[state.persona];
+    $('#view-command').innerHTML = `
+      ${pageHead('WHAT CHANGED TODAY', state.persona === 'investor' ? 'The network is becoming more intelligent.' : 'Vector already did the first shift.', 'A live briefing built from permitted demand, availability, documentation, pricing activity, and verified transaction evidence.', `<button class="btn" data-action="guided-tour">Guided tour</button><button class="btn primary" data-action="open-vector">Ask Vector</button>`)}
+      <div class="intelligence-ribbon">
+        <div><i class="r-dot hot"></i><b>Falcon avionics demand</b><span>accelerating 18%</span></div>
+        <div><i class="r-dot good"></i><b>2 private ranges overlap</b><span>ready for FastClose</span></div>
+        <div><i class="r-dot gold"></i><b>4 documents expiring</b><span>protect $86K in demand</span></div>
+        <div><i class="r-dot blue"></i><b>Package buyer detected</b><span>11 target lines</span></div>
+      </div>
+      <div class="metric-grid">${profile.metrics.map(x => metric(...x)).join('')}</div>
+      <div class="command-grid">
+        <div class="command-left">
+          <section class="panel briefing-panel">
+            <div class="vector-header"><span class="vector-orb large"></span><div><h3>Vector morning briefing</h3><p>Role-aware commercial intelligence · updated 4 minutes ago</p></div><span class="vector-time">14,218 signals processed</span></div>
+            <div class="briefing-message">${profile.message}</div>
+            <div class="action-stack">
+              <div class="advisor-action"><span class="action-impact">+14</span><div><b>Complete the 7003110-901 document stack</b><p>Uploading the current tag and reconfirming availability raises matchability from ${score}% to ${Math.min(99, score + 14)}%.</p></div><button data-action="apply-recommendation" data-rec="docs">Apply</button></div>
+              <div class="advisor-action"><span class="action-impact">+8</span><div><b>Authorize freight as a bridge term</b><p>Preserves your confidential floor while creating an executable total-cost outcome.</p></div><button data-action="apply-recommendation" data-rec="freight">Model</button></div>
+              <div class="advisor-action"><span class="action-impact">$41K</span><div><b>Switch six aging parts to Advisor Optimized</b><p>Estimated portfolio recovery rises while projected liquidation time falls by 38%.</p></div><button data-action="go-inventory">Review</button></div>
+            </div>
+          </section>
+          <section class="panel compat-panel">
+            <div class="compat-layout">${scoreGauge(score)}<div class="compat-copy"><h4>7003110-901 · closest executable path</h4><p>${score >= 85 ? 'FastClose is available.' : 'Vector found a qualified near-match. The smallest high-value changes are shown below.'}</p><div class="compat-factors">${factors(score)}</div></div></div>
+          </section>
+        </div>
+        <div class="command-right">
+          <section class="panel panel-pad"><div class="panel-title-row"><span class="vector-orb"></span><div><h3>Deal Physics</h3><p>What is helping and hurting this transaction.</p></div></div>
+            <div class="physics-stack"><div class="physics good"><span>01</span><div><b>Exact identity</b><small>Part number and application align.</small></div><strong>+20</strong></div><div class="physics good"><span>02</span><div><b>PO readiness</b><small>Buyer can execute immediately.</small></div><strong>+5</strong></div><div class="physics warn"><span>03</span><div><b>Price bridge</b><small>${money(Math.max(0, state.sellerMin - state.buyerMax))} private gap remains.</small></div><strong>−${Math.max(1, 20 - Math.round(clamp(20 - Math.max(0, state.sellerMin - state.buyerMax) / state.sellerMin * 120, 2, 20)))}</strong></div></div>
+          </section>
+          <section class="panel panel-pad"><div class="panel-head compact-head"><div><h3>Estimated time to outcome</h3><p>Based on the current compatibility state.</p></div><span class="status-chip live">LIVE</span></div><div class="time-forecast"><strong>${projectedDays(score)}</strong><span>Current settings</span>${sparkline([26,24,21,19,16,12,8,5,3], '#91f4a9')}</div></section>
+        </div>
+      </div>
+      <div class="opportunity-strip">${profile.opportunities.map((m, i) => opportunityCard(m, i)).join('')}</div>`;
+  }
+
+  function opportunityCard(m, i) {
+    return `<div class="opp-card"><div class="opp-top"><div><div class="opp-pn">${m.pn}</div><div class="opp-desc">${m.desc} · ${m.type}</div></div><div class="opp-score">${m.score}%</div></div><div class="opp-meta"><div><span>PRIVATE GAP</span><b>${m.gap <= 0 ? 'Ranges overlap' : money(m.gap)}</b></div><div><span>PROJECTED PATH</span><b>${m.eta}</b></div></div><div class="opp-actions"><button class="btn" data-action="select-match" data-index="${i}">Analyze</button><button class="btn primary" data-action="open-bridge" data-index="${i}">Bridge</button></div></div>`;
+  }
+
+  function renderVector() {
+    const score = calculateMatchScore();
+    $('#view-vector').innerHTML = `
+      ${pageHead('VECTOR ADVISOR OS', 'A commercial advisor that never stops working.', 'Vector learns your goals, monitors every permitted signal, speaks privately with other advisors, and recommends the smallest change capable of unlocking the strongest realistic outcome.', `<button class="btn" data-action="reset-chat">Reset interview</button><button class="btn primary" data-action="run-diagnostic">Run full diagnostic</button>`)}
+      <div class="vector-layout">
+        <section class="panel chat-panel">
+          <div class="chat-head"><div class="chat-agent"><span class="vector-orb large"></span><div><b>Vector · ${personas[state.persona].name}</b><span>Private advisor · strategy authority: ${state.advisorAggression}%</span></div></div><span class="status-chip live">ANALYZING</span></div>
+          <div class="chat-body" id="chatBody">${state.chat.map(chatBubble).join('')}</div>
+          <div class="chat-input"><input id="vectorChatInput" placeholder="Tell Vector your goal, non-negotiables, or ask what to change…"/><button class="btn primary" data-action="send-vector">Send</button></div>
+        </section>
+        <div class="advisor-profile">
+          <section class="panel profile-section"><h3>Deal Strategy Profile</h3><div class="profile-item"><span>Primary objective</span><b>${state.persona === 'buyer' ? 'Best total acquisition outcome' : 'Maximum net with controlled speed'}</b></div><div class="profile-item"><span>Private price authority</span><b>${state.persona === 'buyer' ? money(state.buyerMax) + ' maximum' : money(state.sellerMin) + ' minimum'}</b></div><div class="profile-item"><span>Current matchability</span><b>${score}%</b></div><div class="profile-item"><span>Projected path</span><b>${projectedDays(score)}</b></div><div class="preference"><label>Advisor initiative <b id="advisorAggressionLabel">${state.advisorAggression}%</b></label><input class="range" type="range" min="0" max="100" value="${state.advisorAggression}" data-range="aggression"/></div><div class="preference"><label>Price flexibility <b id="priceFlexLabel">${state.priceFlexibility}%</b></label><input class="range" type="range" min="0" max="100" value="${state.priceFlexibility}" data-range="flexibility"/></div></section>
+          <section class="panel profile-section"><h3>Vector permissions</h3><div class="permission-grid"><div class="permission"><span>Request concessions</span><b>Approved</b><button class="toggle on" data-action="toggle"></button></div><div class="permission"><span>Reveal private limit</span><b>Never</b><button class="toggle"></button></div><div class="permission"><span>Build trade options</span><b>Approved</b><button class="toggle on" data-action="toggle"></button></div><div class="permission"><span>Auto-accept deal</span><b>Human required</b><button class="toggle"></button></div></div></section>
+          <section class="panel profile-section"><h3>Live research coverage</h3><div class="research-orbit"><div class="orbit-core"><span class="vector-orb"></span><b>14,218</b><small>signals today</small></div><i class="o1"></i><i class="o2"></i><i class="o3"></i></div><div class="source-list"><span>✓ AeroLoop verified closes</span><span>✓ Active private requirements</span><span>✓ Authorized public listings</span><span>✓ Documents & availability</span><span>✓ Repair / exchange structures</span><span>✓ User-owned history</span></div></section>
+        </div>
+      </div>`;
+  }
+
+  function chatBubble(m) {
+    return `<div class="bubble ${m.who}">${m.text}${m.analysis ? `<div class="analysis-card"><b>Current evidence</b><div class="mini-evidence"><span>Matchability <strong>${calculateMatchScore()}%</strong></span><span>Bridge distance <strong>${money(Math.max(0, state.sellerMin - state.buyerMax))}</strong></span><span>Estimated path <strong>${projectedDays()}</strong></span></div></div>` : ''}</div>`;
+  }
+
+  function renderMatch() {
+    const score = calculateMatchScore();
+    const selected = matches[state.selectedMatch] || matches[0];
+    const gap = state.sellerMin - state.buyerMax;
+    $('#view-match').innerHTML = `
+      ${pageHead('PRIVATE MATCH ENGINE', 'Every possible path—not another list of names.', 'AeroLoop ranks outright, exchange, repair, trade, package, and authorized-representative paths while keeping private buying and selling limits concealed.', `<button class="btn" data-action="create-requirement">Create requirement</button><button class="btn primary" data-action="run-match">Run live match</button>`)}
+      <div class="match-layout">
+        <section class="panel match-map"><div class="panel-title-row"><span class="status-chip live">LIVE MAP</span><div><h3>${selected.pn} · ${selected.desc}</h3><p>Five commercially viable paths detected.</p></div></div>
+          <div class="map-stage"><div class="map-ring r1"></div><div class="map-ring r2"></div><div class="map-ring r3"></div><div class="map-core"><span>VECTOR</span></div>
+            <button class="map-node node-a" data-action="path-detail" data-path="Outright"><b>Outright · SV</b><span>Verified Northeast seller</span><strong>${money(18500)}</strong></button>
+            <button class="map-node node-b" data-action="path-detail" data-path="Exchange"><b>Exchange</b><span>$14K core exposure</span><strong>${money(12800)}</strong></button>
+            <button class="map-node node-c" data-action="path-detail" data-path="Repair"><b>Repair existing</b><span>21–30 day estimate</span><strong>$8K–$14K</strong></button>
+            <button class="map-node node-d" data-action="path-detail" data-path="Trade"><b>Trade + cash</b><span>One accepted component</span><strong>${money(9500)}</strong></button>
+            <button class="map-node node-e" data-action="path-detail" data-path="Package"><b>Package breakout</b><span>Included in 18-line lot</span><strong>${money(16900)}</strong></button>
+          </div>
+          <div class="path-legend"><span><i class="good"></i> executable now</span><span><i class="near"></i> advisor bridge available</span><span><i></i> alternative structure</span></div>
+        </section>
+        <div class="match-side">
+          <section class="panel match-detail"><div class="detail-score-row">${scoreGauge(score, 'COMPATIBILITY', 'mini-score')}<div><span class="kicker">CLOSEST DIRECT MATCH</span><h3>Verified operator ↔ verified seller</h3><p>${gap <= 0 ? 'The private price ranges overlap. Deal room access is available.' : `The ranges are ${money(gap)} apart. Vector can bridge the difference without disclosing either limit.`}</p></div></div><div class="compat-factors">${factors(score)}</div>
+            <div class="private-shield"><div><span>BUYER MAX</span><strong>${money(state.buyerMax)}</strong><small>Encrypted · never disclosed</small></div><span class="shield-icon">◈</span><div><span>SELLER MIN</span><strong>${money(state.sellerMin)}</strong><small>Encrypted · never disclosed</small></div></div>
+          </section>
+          <section class="panel panel-pad"><div class="panel-head compact-head"><div><h3>Price Path Simulator</h3><p>Model probability without changing a live private limit.</p></div><span class="status-chip">PRIVATE</span></div>
+            <div class="sim-row"><label>Buyer maximum <b id="buyerMaxLabel">${money(state.buyerMax)}</b></label><input class="range" data-range="buyerMax" type="range" min="14000" max="22000" step="250" value="${state.buyerMax}"/></div>
+            <div class="sim-row"><label>Seller minimum <b id="sellerMinLabel">${money(state.sellerMin)}</b></label><input class="range" data-range="sellerMin" type="range" min="14000" max="22000" step="250" value="${state.sellerMin}"/></div>
+            <div class="sim-row"><label>Documentation completeness <b id="docsLabel">${state.docs}%</b></label><input class="range" data-range="docs" type="range" min="30" max="100" value="${state.docs}"/></div>
+            <div class="sim-outcome"><div><span>Projected score</span><strong>${score}%</strong></div><div><span>Expected path</span><strong>${projectedDays(score)}</strong></div></div>
+            <div class="switch-grid"><button class="model-switch ${state.freight ? 'on' : ''}" data-action="toggle-freight"><i></i><span>Seller includes freight</span><b>+${state.freight ? '0' : '4'} pts</b></button><button class="model-switch ${state.warranty ? 'on' : ''}" data-action="toggle-warranty"><i></i><span>90-day warranty</span><b>+${state.warranty ? '0' : '3'} pts</b></button></div>
+            <button class="btn primary full" data-action="open-bridge">Ask both advisors to bridge this match</button>
+          </section>
+        </div>
+      </div>`;
+  }
+
+  function renderMarket() {
+    const score = calculateMatchScore();
+    const demandBars = [42,55,51,63,68,66,74,82,79,91,88,96];
+    $('#view-market').innerHTML = `
+      ${pageHead('MARKET PULSE', 'Pricing intelligence with evidence—not invented market value.', 'AeroLoop separates public asking activity, user-owned history, verified closes, repair exposure, and estimated liquidity. No private competitor floor or maximum is exposed.', `<button class="btn">Methodology</button><button class="btn primary" data-action="export-report">Export intelligence report</button>`)}
+      <div class="market-grid">
+        <section class="panel market-hero"><div class="pulse-summary"><div><span class="kicker">AEROLOOP DEMAND INDEX</span><h3>Falcon & Hawker avionics</h3><p>Qualified searches, requirements, quotes, availability, and verified closes.</p></div><div class="pulse-index"><span>CURRENT INDEX</span><strong>87.4</strong><small>+18.2% / 30 days</small></div></div><div class="bar-chart">${demandBars.map((v,i)=>`<div class="bar-col"><i style="height:${v}%"></i><span>${i+1}</span></div>`).join('')}</div></section>
+        <section class="panel panel-pad"><div class="panel-head compact-head"><div><h3>Market Activity Range</h3><p>7003110-901 · clearly separated evidence sources.</p></div><span class="status-chip live">UPDATED</span></div><div class="range-stack"><div><span>Public asking activity</span><b>$20.5K–$27.8K</b><i style="--from:42%;--to:82%"></i></div><div><span>AeroLoop verified closes</span><b>$18.2K–$22.4K</b><i style="--from:29%;--to:59%"></i></div><div><span>User-owned history</span><b>$17.9K–$23.1K</b><i style="--from:27%;--to:64%"></i></div><div><span>Estimated liquidity range</span><b>$18.5K–$21.7K</b><i style="--from:31%;--to:54%"></i></div></div><div class="method-note"><b>Why AeroLoop is careful</b><p>These are evidence categories and activity ranges—not a command for every seller to use the same price.</p></div></section>
+      </div>
+      <div class="market-grid lower-market">
+        <section class="panel panel-pad"><div class="panel-head compact-head"><div><h3>Time-to-close impact</h3><p>Observed effect of stronger compatibility and Advisor actions.</p></div><span class="status-chip">90 DAYS</span></div><div class="impact-comparison"><div><span>Traditional sourcing / listing</span><strong>18.6 days</strong>${sparkline([22,21,20,23,19,18,18,17,19], '#ff9d69')}</div><div><span>AeroLoop qualified match</span><strong>${projectedDays(score)}</strong>${sparkline([16,14,11,10,8,6,4,3,2], '#43ddff')}</div></div></section>
+        <section class="panel panel-pad"><div class="panel-head compact-head"><div><h3>Demand heat map</h3><p>Aircraft family × transaction structure.</p></div><span class="status-chip live">LIVE</span></div><div class="heat-grid">${['Falcon','Hawker','Learjet','Gulfstream','Challenger','Citation'].map((x,i)=>`<div style="--heat:${[95,88,73,84,79,67][i]}%"><b>${x}</b><span>${['Outright','Trade','Repair','Exchange','Package','Same-Day'][i]}</span><i></i></div>`).join('')}</div></section>
+      </div>`;
+  }
+
+  const strategies = {
+    current: { label: 'Current Settings', recovery: [312000,378000], months: '14–22 months', matches: 18, note: 'Protects asking prices but leaves several parts below qualified-match threshold.', curve: [8,11,15,19,24,29,34,39,43,47] },
+    yield: { label: 'Maximum Yield', recovery: [382000,458000], months: '16–28 months', matches: 14, note: 'Highest projected gross recovery with slower movement and strict documentation.', curve: [4,7,10,14,18,23,28,34,40,47] },
+    balanced: { label: 'Balanced', recovery: [348000,419000], months: '8–13 months', matches: 39, note: 'Selective pricing, freight flexibility, package breakouts, and Commission Missions.', curve: [9,15,22,29,37,45,53,61,69,76] },
+    liquidity: { label: 'Liquidity', recovery: [291000,354000], months: '3–7 months', matches: 64, note: 'Same-Day opportunities and package buyers maximize speed.', curve: [18,29,41,53,64,74,82,89,94,98] },
+    advisor: { label: 'Advisor Optimized', recovery: [361000,432000], months: '6–10 months', matches: 51, note: 'Vector selects the strongest risk-adjusted path part by part.', curve: [13,22,32,43,54,64,73,81,88,94] }
+  };
+
+  function forecastSvg(values) {
+    const w=700,h=250,max=Math.max(...values),pts=values.map((v,i)=>`${i/(values.length-1)*w},${h-(v/max)*(h-25)-10}`).join(' ');
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="forecastFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#43ddff" stop-opacity=".35"/><stop offset="1" stop-color="#7587ff" stop-opacity="0"/></linearGradient></defs><polygon points="0,${h} ${pts} ${w},${h}" fill="url(#forecastFill)"/><polyline points="${pts}" fill="none" stroke="#5fe4ff" stroke-width="3" vector-effect="non-scaling-stroke"/>${values.map((v,i)=>`<circle cx="${i/(values.length-1)*w}" cy="${h-(v/max)*(h-25)-10}" r="4" fill="#071018" stroke="#5fe4ff" stroke-width="2"/>`).join('')}</svg>`;
+  }
+
+  function renderInventory() {
+    const s = strategies[state.twinStrategy];
+    $('#view-inventory').innerHTML = `
+      ${pageHead('INVENTORY REVENUE TWIN', 'See the outcome before changing the strategy.', 'Vector models recovery, velocity, qualified demand, documentation lift, package potential, and advisor effort across the entire portfolio.', `<button class="btn" data-action="upload-list">Upload inventory</button><button class="btn primary" data-action="activate-strategy">Activate ${s.label}</button>`)}
+      <div class="twin-layout">
+        <section class="panel"><div class="strategy-tabs">${Object.entries(strategies).map(([k,v])=>`<button class="strategy-tab ${state.twinStrategy===k?'active':''}" data-strategy="${k}">${v.label}</button>`).join('')}</div><div class="twin-forecast"><div class="forecast-main"><div><span>ESTIMATED RECOVERY</span><strong>${money(s.recovery[0])}–${money(s.recovery[1])}</strong><small>${state.twinStrategy==='advisor'?'+$41,000 versus current median':''}</small></div><div class="forecast-badge"><span>EXPECTED WINDOW</span><b>${s.months}</b></div></div><div class="forecast-chart">${forecastSvg(s.curve)}</div><div class="strategy-metrics"><div><span>Qualified matches</span><b>${s.matches}</b></div><div><span>Portfolio readiness</span><b>${state.twinStrategy==='advisor'?'84%':'68%'}</b></div><div><span>Estimated sales labor avoided</span><b>${state.twinStrategy==='advisor'?'186 hrs':'42 hrs'}</b></div></div><div class="strategy-explanation"><span class="vector-orb"></span><div><b>Vector assessment</b><p>${s.note}</p></div></div></div></section>
+        <section class="panel"><div class="panel-head"><div><h3>Portfolio intervention queue</h3><p>Highest-value changes first.</p></div><span class="status-chip live">6 PARTS</span></div><div class="inventory-list">${inventory.map((p,i)=>`<div class="inventory-row"><div><b>${p.pn}</b><span>${p.desc} · ${p.condition} · ${p.availability}</span></div><strong>${money(p.price)}</strong><div class="readiness"><i style="--ready:${p.docs}%"></i><em>${p.docs}%</em></div><button data-action="inventory-detail" data-index="${i}">${p.age>60?'Optimize':'Review'}</button></div>`).join('')}</div></section>
+      </div>`;
+  }
+
+  function renderPackages() {
+    $('#view-packages').innerHTML = `
+      ${pageHead('PACKAGE HUNTER', 'Turn one buyer mandate into a multi-seller acquisition.', 'Vector searches individual listings, private inventories, Commission Missions, repair-station surplus, trades, and liquidation campaigns to assemble the strongest package.', `<button class="btn">Saved mandates</button><button class="btn primary" data-action="build-package">${state.packageBuilt?'Rebuild package':'Run Package Hunter'}</button>`)}
+      <div class="package-layout">
+        <section class="panel package-builder"><div class="package-need"><span class="kicker">BUYER MANDATE PH-0081</span><h3>Falcon avionics acquisition package</h3><p>Spend up to $400,000 for at least eight of twelve target lines. Weighted documentation score must exceed 80%. Trade inventory may cover up to 20%.</p><div class="need-tags">${['7003110-901','NF0075-667','Flight control computer','Display units ×2','COM modules','APU controller','Windshield','Brake components'].map(x=>`<span class="need-tag">${x}</span>`).join('')}</div></div>
+          <div class="package-map"><div class="seller-cluster cluster-1"><b>Northeast seller</b><span>4 matching lines · 87% docs</span><strong>$118K</strong></div><div class="seller-cluster cluster-2"><b>Repair station surplus</b><span>2 matching lines · 94% docs</span><strong>$64K</strong></div><div class="seller-cluster cluster-3"><b>Private liquidation</b><span>3 matching lines · 79% docs</span><strong>$91K</strong></div><div class="seller-cluster cluster-4"><b>Commission Mission</b><span>2 matching lines · 85% docs</span><strong>$72K</strong></div><div class="package-core"><span>${state.packageBuilt?'11':'0'}</span><b>lines assembled</b><small>${state.packageBuilt?'4 sellers':'awaiting analysis'}</small></div>${state.packageBuilt?'<div class="package-beam b1"></div><div class="package-beam b2"></div><div class="package-beam b3"></div><div class="package-beam b4"></div>':''}</div>
+        </section>
+        <div class="package-side"><section class="panel package-summary"><div class="panel-title-row"><span class="vector-orb"></span><div><h3>${state.packageBuilt?'Package ready for review':'Vector package strategy'}</h3><p>${state.packageBuilt?'Strongest risk-adjusted combination found.':'Run Package Hunter to assemble the mandate.'}</p></div></div><div class="summary-rows"><div class="summary-row"><span>Target lines fulfilled</span><b>${state.packageBuilt?'11 / 12':'—'}</b></div><div class="summary-row"><span>Total seller asks</span><b>${state.packageBuilt?'$345,000':'—'}</b></div><div class="summary-row"><span>Vector package offer</span><b>${state.packageBuilt?'$311,500':'—'}</b></div><div class="summary-row"><span>Trade component</span><b>${state.packageBuilt?'$42,000 credit':'Optional'}</b></div><div class="summary-row"><span>Weighted document score</span><b>${state.packageBuilt?'86%':'—'}</b></div><div class="summary-row"><span>Estimated market activity range</span><b>${state.packageBuilt?'$372K–$428K':'—'}</b></div></div><div class="risk-card"><b>${state.packageBuilt?'Two risks remain':'Why this matters'}</b><p>${state.packageBuilt?'One line requires availability reconfirmation. One trade valuation needs both parties’ approval.':'A buyer can define one acquisition thesis while Vector handles multi-seller sourcing, package economics, and private negotiation.'}</p></div>${state.packageBuilt?'<button class="btn primary full" data-action="package-bridge">Open four-party offer workflow</button>':''}</section><section class="panel panel-pad"><h3>Package economics</h3><div class="package-econ"><div><span>Individual acquisition</span><b>$345K</b></div><div><span>Package target</span><b>$311.5K</b></div><div class="good"><span>Projected buyer advantage</span><b>$33.5K</b></div></div></section></div>
+      </div>`;
+  }
+
+  function renderBridge() {
+    const score = state.bridgeScore;
+    $('#view-bridge').innerHTML = `
+      ${pageHead('ADVISOR-TO-ADVISOR BRIDGE', 'The negotiation happens without exposing private limits.', 'Each Vector advisor understands its user’s true priorities, proposes structured concessions, and asks the human only when meaningful authority is required.', `<button class="btn">View audit trail</button><button class="btn primary" data-action="run-bridge">Run next negotiation cycle</button>`)}
+      <div class="bridge-layout">
+        <section class="panel agent-column"><div class="agent-head"><span class="vector-orb"></span><div><b>Buyer Vector</b><span>Northstar Charter · procurement goal</span></div><span class="status-chip">PRIVATE</span></div><div class="private-limit"><span>CONFIDENTIAL MAXIMUM</span><strong>${money(state.buyerMax)}</strong><small>Never transmitted to seller or seller advisor</small></div><div class="bridge-messages"><div class="agent-msg accepted">Buyer can execute today and values total delivered cost over headline price.</div><div class="agent-msg">Will consider a higher purchase price only for freight inclusion, current release documentation, or extended warranty.</div><div class="agent-msg pending">Waiting for authority: accept 90-day warranty as sufficient?</div></div><div class="agent-command"><button class="btn" data-action="grant-authority">Grant limited authority</button></div></section>
+        <div class="bridge-center"><section class="panel bridge-score-panel"><span class="kicker">LIVE BRIDGE COMPATIBILITY</span><div class="bridge-number">${score}%</div><div class="bridge-progress" style="--bridge:${score}%"><i></i></div><p>${score>=85?'FastClose threshold reached. Human approval can open the Deal Room.':'Vector is searching for the smallest balanced concession.'}</p><div class="bridge-structures"><button class="structure-card ${state.selectedStructure==='freight'?'selected':''}" data-structure="freight"><b>A · Freight bridge</b><span>Seller includes freight; both price limits remain unchanged.</span></button><button class="structure-card ${state.selectedStructure==='warranty'?'selected':''}" data-structure="warranty"><b>B · Warranty bridge</b><span>Buyer increases delivered price in exchange for 90-day warranty.</span></button><button class="structure-card ${state.selectedStructure==='trade'?'selected':''}" data-structure="trade"><b>C · Trade + cash</b><span>Buyer applies accepted surplus component as partial consideration.</span></button></div>${score>=85?'<button class="btn primary full" data-action="unlock-deal-room">Unlock Deal Room</button>':''}</section><section class="panel bridge-timeline"><div class="timeline-step done"><b>Private goals modeled</b><span>No limits exposed.</span></div><div class="timeline-step done"><b>Commercial gap identified</b><span>$500 price distance.</span></div><div class="timeline-step active"><b>Structured concession request</b><span>${state.selectedStructure} option under review.</span></div><div class="timeline-step"><b>Human authorization</b><span>Required before commitment.</span></div></section></div>
+        <section class="panel agent-column"><div class="agent-head"><span class="vector-orb"></span><div><b>Seller Vector</b><span>Jet Geeks Aviation · liquidity goal</span></div><span class="status-chip">PRIVATE</span></div><div class="private-limit"><span>CONFIDENTIAL MINIMUM NET</span><strong>${money(state.sellerMin)}</strong><small>Never transmitted to buyer or buyer advisor</small></div><div class="bridge-messages"><div class="agent-msg accepted">Seller prioritizes speed but will not reduce the confidential minimum.</div><div class="agent-msg">Freight inclusion is available if the buyer issues a PO within 60 minutes.</div><div class="agent-msg pending">Vector proposes freight inclusion plus 90-day seller warranty.</div></div><div class="agent-command"><button class="btn" data-action="grant-authority">Authorize proposed structure</button></div></section>
+      </div>`;
+  }
+
+  function renderClose() {
+    const step = state.closeStep;
+    $('#view-close').innerHTML = `
+      ${pageHead('VERIFIED CLOSE', 'Convert a completed transaction into trusted proof.', 'AeroLoop records agreement, commercial evidence, fulfillment evidence, and compensation—without becoming the seller, repair station, or airworthiness authority.', `<button class="btn">Download audit record</button><button class="btn primary" data-action="advance-close">Continue workflow</button>`)}
+      <div class="close-layout">
+        <section class="panel close-flow"><span class="kicker">CLOSE VC-00184</span><h3>7003110-901 · EFIS Display Unit</h3><p class="close-copy">A structured proof flow creates reliable performance data while keeping the burden light for users.</p><div class="close-steps"><div class="close-step ${step>=1?'done':''}"><span>1</span><b>Deal Card</b><small>Terms agreed</small></div><div class="close-step ${step>=2?'done':''}"><span>2</span><b>E-sign</b><small>Audit trail preserved</small></div><div class="close-step ${step>=3?'done':''}"><span>3</span><b>Fulfillment</b><small>PO / shipment / receipt</small></div><div class="close-step ${step>=4?'done':''}"><span>4</span><b>Verified Close</b><small>Outcome enters ledger</small></div></div>
+          <div class="proof-upload ${state.proofUploaded?'uploaded':''}"><div class="upload-icon">${state.proofUploaded?'✓':'⇧'}</div><b>${state.proofUploaded?'Proof package accepted':'Add the easiest available proof'}</b><p>${state.proofUploaded?'PO, shipment tracking, and counterparty acknowledgment are linked to this close.':'Upload or simulate a PO, invoice, order acknowledgment, shipment tracking, delivery receipt, repair release, or payment receipt.'}</p><button class="btn ${state.proofUploaded?'success':'primary'}" data-action="upload-proof">${state.proofUploaded?'Proof verified':'Simulate proof upload'}</button></div>
+          <div class="close-assurances"><div><b>AeroLoop verified</b><span>Identity, signed terms, proof chain, payment of platform compensation.</span></div><div><b>AeroLoop did not verify</b><span>Airworthiness, authenticity, installation eligibility, or regulatory acceptance.</span></div></div>
+        </section>
+        <section class="panel deal-card"><div class="deal-hero"><span>OPEN-BOOK DEAL CARD</span><h3>Near Match converted to FastClose</h3><p>Private limits remained concealed throughout the process.</p></div><div class="deal-lines"><div class="deal-line"><span>Agreed part price</span><b>$18,250</b></div><div class="deal-line"><span>Seller receives</span><b>$18,250</b></div><div class="deal-line"><span>Authorized partner commission</span><b>$0</b></div><div class="deal-line"><span>AeroLoop Advisor fee</span><b>$149</b></div><div class="deal-line"><span>Freight</span><b>Seller included</b></div><div class="deal-line"><span>Warranty</span><b>90 days · seller stated</b></div><div class="deal-line"><span>Documents</span><b>8130-3 uploaded · authenticity not determined</b></div></div><div class="deal-total"><span>Buyer total before tax</span><strong>$18,399</strong></div><div class="signature-row"><div class="signature"><span>BUYER</span><b>${state.signed?'Northstar Charter · signed':'Awaiting signature'}</b>${state.signed?'<i>✓ verified</i>':''}</div><div class="signature"><span>SELLER</span><b>${state.signed?'Jet Geeks Aviation · signed':'Awaiting signature'}</b>${state.signed?'<i>✓ verified</i>':''}</div></div><button class="btn ${state.signed?'success':'primary'} full" data-action="sign-deal">${state.signed?'Agreement signed':'Simulate DocuSign agreement'}</button>${state.signed?'<button class="btn full" data-action="paylink">Open AeroLoop PayLink</button>':''}</section>
+      </div>`;
+  }
+
+  function renderImpact() {
+    $('#view-impact').innerHTML = `
+      ${pageHead('ADVISOR IMPACT LEDGER', 'Proof that the software changed the outcome.', 'Every recommendation is linked to the prior state, accepted action, compatibility movement, time saved, realized result, and fee paid.', `<button class="btn">Share verified proof</button><button class="btn primary" data-action="export-report">Export ROI report</button>`)}
+      <div class="impact-grid">
+        <section class="panel impact-hero"><div class="impact-score"><div><span class="kicker">VERIFIED VALUE CREATED</span><h3>AeroLoop has produced measurable commercial improvement.</h3><p>These demo results connect each recommendation to a counterfactual estimate and a Verified Close evidence package.</p></div><div class="value-created"><span>NET VERIFIED VALUE</span><strong>$186,420</strong></div></div><div class="impact-chart">${forecastSvg([6,11,17,25,36,49,64,81,102,126])}</div></section>
+        <section class="panel receipt-panel"><h3>Latest Seller Yield Receipt</h3><div class="receipt-row"><span>Initial projected recovery</span><b>$17K–$19K</b></div><div class="receipt-row"><span>Verified close</span><b>$20,750</b></div><div class="receipt-row"><span>Advisor-supported uplift</span><b>$1,750–$3,750</b></div><div class="receipt-row"><span>Time to close</span><b>4 days</b></div><div class="receipt-row"><span>AeroLoop fee</span><b>$310</b></div><div class="receipt-net"><span>ESTIMATED NET ADDITIONAL RECOVERY</span><strong>$1,440–$3,440</strong></div></section>
+        <div class="proof-cards"><div class="panel proof-card"><span>AVERAGE SOURCING TIME SAVED</span><strong>11.6 hrs</strong><small>per verified buyer close</small></div><div class="panel proof-card"><span>INVENTORY AGING REDUCTION</span><strong>38%</strong><small>Advisor Optimized cohort</small></div><div class="panel proof-card"><span>DOCUMENT COMPLETENESS LIFT</span><strong>+22 pts</strong><small>after Vector coaching</small></div><div class="panel proof-card"><span>USER SATISFACTION</span><strong>96%</strong><small>verified-close survey</small></div></div>
+      </div>
+      <div class="impact-timeline panel panel-pad"><div class="panel-head compact-head"><div><h3>Recommendation → outcome chain</h3><p>The Advisor Outcome Graph is AeroLoop’s most defensible intelligence asset.</p></div><span class="status-chip live">AUDITABLE</span></div><div class="outcome-chain"><div><span>01</span><b>Initial state</b><small>58% compatibility · $22.5K visible ask</small></div><i>→</i><div><span>02</span><b>Vector advice</b><small>Add tag scan, freight, confirmed availability</small></div><i>→</i><div><span>03</span><b>Accepted changes</b><small>Floor unchanged · readiness improved</small></div><i>→</i><div><span>04</span><b>Verified result</b><small>84% match · close in 2.4 days</small></div></div></div>`;
+  }
+
+  function renderInvestor() {
+    $('#view-investor').innerHTML = `
+      <section class="panel investor-hero"><div><span class="kicker">AEROLOOP 2.0 · INVESTOR DEMO</span><h1>The aviation aftermarket does not need another database. It needs an <em>outcome engine.</em></h1></div><p>AeroLoop turns private buyer and seller intent into explainable compatibility, structured negotiations, verified closes, and compounding transaction intelligence.</p></section>
+      <div class="investor-grid">
+        <section class="panel investor-card span-5"><h3>The wedge</h3><p>Business-aviation buyers waste hours sending RFQs. Sellers carry aging inventory, stale listings, unclear documentation, and hidden broker chains. AeroLoop asks each side for two critical inputs—the requirement and private commercial limit—then does the work between them.</p><div class="big-thesis"><b>You name your number.</b><span>AeroLoop finds and improves the match.</span></div></section>
+        <section class="panel investor-card span-7"><h3>Four compounding moats</h3><div class="moat-stack"><div class="moat"><b>Evidence Graph</b><span>Part, serial, documents, repair events, owners, and proof.</span></div><div class="moat"><b>Opportunity Graph</b><span>Demand, inventory, capability, packages, trades, and urgency.</span></div><div class="moat"><b>Reliability Graph</b><span>Who responds, honors terms, ships, and pays compensation.</span></div><div class="moat"><b>Outcome Graph</b><span>Which recommendation changed the verified commercial result.</span></div></div></section>
+        <section class="panel investor-card span-4"><h3>Revenue architecture</h3><table class="revenue-table"><tr><th>Product</th><th>Model</th></tr><tr><td>Advisor Insight</td><td>$99/mo</td></tr><tr><td>Advisor Active</td><td>$299/mo</td></tr><tr><td>Tactical Company</td><td>$899/mo</td></tr><tr><td>Hybrid success fee</td><td>0.25% · $750 cap</td></tr><tr><td>Liquidation Sprint</td><td>0.75% · capped</td></tr><tr><td>Enterprise / API</td><td>Annual contract</td></tr></table></section>
+        <section class="panel investor-card span-4"><h3>Illustrative scale economics</h3><div class="investor-metrics"><div><span>Monthly GMV</span><b>$12.5M</b></div><div><span>Transaction revenue</span><b>$217K</b></div><div><span>Subscription revenue</span><b>$175K</b></div><div><span>Illustrative gross revenue</span><b>$392K/mo</b></div></div><p>Illustrative scenario, not a forecast. Before operating, compliance, payment, data, and support costs.</p></section>
+        <section class="panel investor-card span-4"><h3>Why the product compounds</h3><div class="flywheel"><div class="flywheel-core"><b>BETTER<br>OUTCOMES</b></div><div class="flywheel-node fw1">More verified inventory</div><div class="flywheel-node fw2">More private demand</div><div class="flywheel-node fw3">Stronger recommendations</div><div class="flywheel-node fw4">More verified closes</div></div></section>
+        <section class="panel investor-card span-8"><h3>Why incumbents cannot erase the wedge overnight</h3><p>Inventory scale can be copied or aggregated. The hard asset is longitudinal proof connecting a user’s initial objective, private constraints, advisor recommendation, accepted change, compatibility improvement, and verified outcome. That dataset becomes more valuable with every close.</p><div class="defense-grid"><div><span>Neutral infrastructure</span><b>No secret trading against members</b></div><div><span>Explainable intelligence</span><b>Deterministic score, AI explanation</b></div><div><span>Fair economics</span><b>Fixed and capped fees</b></div><div><span>Trusted outcomes</span><b>Progressive Verified Close evidence</b></div></div></section>
+        <section class="panel investor-card span-4"><div class="investor-ask"><div><h3>Seed objective</h3><p>Build the production marketplace, verify the first 1,000 AeroPassports, and establish the Northeast business-aviation wedge.</p></div><div class="ask-amount"><span>ILLUSTRATIVE ROUND</span><strong>$2.5M</strong></div></div></section>
+        <section class="panel investor-card span-12 investor-cta"><div><span class="kicker">THE ONE-SENTENCE PITCH</span><h3>AeroLoop continuously converts private aviation-part intent into the closest executable transaction—and proves the value it created.</h3></div><button class="primary-cta" data-action="guided-tour">Run the investor product tour <span>↗</span></button></section>
+      </div>`;
+  }
+
+  function renderAll() {
+    renderCommand();
+    renderVector();
+    renderMatch();
+    renderMarket();
+    renderInventory();
+    renderPackages();
+    renderBridge();
+    renderClose();
+    renderImpact();
+    renderInvestor();
+  }
+
+  function showToast(title, text, icon = '✓') {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<span class="toast-icon">${icon}</span><div><b>${title}</b><p>${text}</p></div>`;
+    $('#toastStack').appendChild(el);
+    setTimeout(() => el.remove(), 4200);
+  }
+
+  function openModal(html) {
+    $('#modalCard').innerHTML = html;
+    $('#modal').classList.add('open');
+    $('#modal').setAttribute('aria-hidden','false');
+  }
+  function closeModal() { $('#modal').classList.remove('open'); $('#modal').setAttribute('aria-hidden','true'); }
+
+  function modalHead(kicker, title, copy) {
+    return `<div class="modal-head"><div><span class="kicker">${kicker}</span><h2>${title}</h2><p>${copy}</p></div><button class="modal-close" data-action="close-modal">×</button></div>`;
+  }
+
+  function guidedTour() {
+    openModal(`${modalHead('90-SECOND INVESTOR STORY','Watch AeroLoop create the deal','This guided simulation walks through the exact transaction logic that differentiates the platform.')}
+      <div class="tour-story"><div class="tour-step active"><span>01</span><div><b>Seller uploads inventory</b><p>Vector creates AeroPassports, identifies document gaps, records a confidential minimum, and models the strongest strategy.</p></div></div><div class="tour-step"><span>02</span><div><b>Buyer states one requirement</b><p>Part, condition, certification, structure, deadline, and private maximum replace dozens of RFQs.</p></div></div><div class="tour-step"><span>03</span><div><b>Vector calculates compatibility</b><p>Deterministic logic measures identity, condition, documentation, price, structure, logistics, and readiness.</p></div></div><div class="tour-step"><span>04</span><div><b>Advisors bridge the gap privately</b><p>Structured concessions improve compatibility without exposing either side’s limit.</p></div></div><div class="tour-step"><span>05</span><div><b>Verified Close proves the outcome</b><p>The transaction updates the Impact Ledger and strengthens AeroLoop’s proprietary intelligence.</p></div></div></div><div class="modal-actions"><button class="btn" data-action="close-modal">Close</button><button class="btn primary" data-action="tour-launch">Enter at Part Match</button></div>`);
+  }
+
+  function quickCreate() {
+    openModal(`${modalHead('NEW OPPORTUNITY','What needs to happen?','One clear intent is enough for Vector to begin building the commercial path.')}
+      <div class="quick-grid"><button data-action="create-sell"><span>↗</span><b>Sell or liquidate</b><small>Upload inventory and set private minimums.</small></button><button data-action="create-buy"><span>⌕</span><b>Find a part</b><small>Set requirement and private maximum.</small></button><button data-action="create-mission"><span>◎</span><b>Commission Mission</b><small>Authorize someone else to move inventory.</small></button><button data-action="create-package"><span>⬡</span><b>Package mandate</b><small>Source several lines under one total budget.</small></button><button data-action="create-repair"><span>◇</span><b>Repair / replace</b><small>Compare true total cost and turnaround.</small></button><button data-action="create-trade"><span>⇄</span><b>Trade + cash</b><small>Use a part as partial or total consideration.</small></button></div>`);
+  }
+
+  function formModal(type) {
+    const seller = type === 'sell';
+    openModal(`${modalHead('VECTOR INTAKE', seller?'Create a Sell Today opportunity':'Create a private buyer requirement', seller?'Give Vector the part and commercial boundaries. It will organize the rest.':'Tell Vector what you need and the highest outcome you can justify.')}
+      <div class="form-grid"><div class="field"><label>PART NUMBER</label><input value="${seller?'7003110-901':'NF0075-667'}"/></div><div class="field"><label>CONDITION</label><select><option>Serviceable</option><option>Overhauled</option><option>New surplus</option><option>As removed</option></select></div><div class="field"><label>${seller?'VISIBLE ASKING PRICE':'TARGET PRICE'}</label><input value="${seller?'22500':'3800'}"/></div><div class="field"><label>${seller?'CONFIDENTIAL MINIMUM NET':'CONFIDENTIAL MAXIMUM'}</label><input value="${seller?'18500':'4100'}"/></div><div class="field"><label>DOCUMENT REQUIREMENT</label><select><option>8130-3 required</option><option>Trace and shop tag</option><option>Documents negotiable</option></select></div><div class="field"><label>STRUCTURES</label><select><option>Outright + trade</option><option>Outright only</option><option>Exchange accepted</option><option>Repair accepted</option></select></div></div><div class="modal-actions"><button class="btn" data-action="close-modal">Cancel</button><button class="btn primary" data-action="save-opportunity">Let Vector build the opportunity</button></div>`);
+  }
+
+  function sendVector(message) {
+    if (!message.trim()) return;
+    state.chat.push({ who:'user', text: message.trim() });
+    renderVector();
+    requestAnimationFrame(() => { const body=$('#chatBody'); if(body) body.scrollTop=body.scrollHeight; });
+    setTimeout(() => {
+      const lower = message.toLowerCase();
+      let response = 'I modeled that request against current demand, availability, documentation, structure, and transaction-readiness signals.';
+      if (lower.includes('7003110') || lower.includes('display')) response = `The strongest path is a Northeast buyer at ${money(state.buyerMax)} maximum against your ${money(state.sellerMin)} floor. Freight inclusion and the current tag scan raise compatibility to ${Math.min(99, calculateMatchScore()+9)}% without lowering your floor.`;
+      else if (lower.includes('price') || lower.includes('lower')) response = 'I would not lower the confidential minimum yet. First improve the visible ask, document stack, and freight terms; those changes create a larger probability gain per dollar conceded.';
+      else if (lower.includes('package')) response = 'I found four sellers capable of fulfilling 11 of 12 target lines under a $311,500 modeled offer, including a $42,000 trade credit.';
+      else if (lower.includes('fast') || lower.includes('today')) response = 'Activate Sell Today for high-demand parts, require verified buyers, and authorize a 60-minute PO window. I estimate three immediate bridge opportunities.';
+      state.chat.push({ who:'agent', text: response, analysis:true });
+      renderVector();
+      requestAnimationFrame(() => { const body=$('#chatBody'); if(body) body.scrollTop=body.scrollHeight; });
+    }, 650);
+  }
+
+  function handleAction(action, target) {
+    switch(action) {
+      case 'enter-demo': enterDemo('seller','command'); break;
+      case 'open-investor': enterDemo('investor','investor'); break;
+      case 'watch-flow': guidedTour(); break;
+      case 'go-home': goHome(); break;
+      case 'close-modal': closeModal(); break;
+      case 'guided-tour': guidedTour(); break;
+      case 'tour-launch': closeModal(); enterDemo('seller','match'); break;
+      case 'quick-create': quickCreate(); break;
+      case 'open-vector': switchView('vector'); break;
+      case 'go-inventory': switchView('inventory'); break;
+      case 'open-bridge': state.selectedMatch=Number(target.dataset.index||0); switchView('bridge'); break;
+      case 'select-match': state.selectedMatch=Number(target.dataset.index||0); switchView('match'); showToast('Match loaded', matches[state.selectedMatch].pn+' is ready for analysis.'); break;
+      case 'apply-recommendation': {
+        const r=target.dataset.rec;
+        if(r==='docs') state.docs=Math.min(100,state.docs+14);
+        if(r==='freight') state.freight=true;
+        state.recommendationsAccepted.add(r); renderAll(); showToast('Recommendation modeled', `Matchability is now ${calculateMatchScore()}%.`); break;
+      }
+      case 'run-match': showToast('Network scan complete','Five commercially viable paths ranked in 1.8 seconds.'); break;
+      case 'toggle-freight': state.freight=!state.freight; renderMatch(); renderCommand(); break;
+      case 'toggle-warranty': state.warranty=!state.warranty; renderMatch(); renderCommand(); break;
+      case 'path-detail': openModal(`${modalHead('ALTERNATIVE PATH',target.dataset.path,'Vector compares the true commercial structure—not only the headline price.')}<div class="path-modal"><div><span>Estimated total exposure</span><b>${target.dataset.path==='Repair'?'$9,500–$24,000':'$18,250–$21,400'}</b></div><div><span>Availability</span><b>${target.dataset.path==='Repair'?'21–30 days':'Immediate'}</b></div><div><span>Main uncertainty</span><b>${target.dataset.path==='Exchange'?'Core condition':'Documentation acceptance'}</b></div></div><div class="modal-actions"><button class="btn" data-action="close-modal">Close</button><button class="btn primary" data-action="open-bridge">Ask Vector to negotiate</button></div>`); break;
+      case 'run-diagnostic': showToast('Full diagnostic complete','Vector found 7 opportunities, 4 documentation gaps, and $86K in unlockable demand.'); break;
+      case 'send-vector': sendVector($('#vectorChatInput')?.value||''); break;
+      case 'quick-vector-send': sendVector($('#vectorQuickInput')?.value||''); switchView('vector'); $('#vectorDock').classList.remove('open'); break;
+      case 'reset-chat': state.chat=state.chat.slice(0,1); renderVector(); break;
+      case 'toggle': target.classList.toggle('on'); showToast('Permission updated','Vector authority has been changed.'); break;
+      case 'activate-strategy': showToast(`${strategies[state.twinStrategy].label} activated`,'Vector will request approval before changing any live commercial term.'); break;
+      case 'upload-list': openModal(`${modalHead('AI INVENTORY INTAKE','Drop the ugliest spreadsheet you have','Vector normalizes rows, flags duplicates, identifies missing fields, and creates AeroPassports.')}<div class="proof-upload"><div class="upload-icon">⇧</div><b>Simulated file intake</b><p>Excel, CSV, PDF, image, or emailed list.</p><button class="btn primary" data-action="simulate-import">Process sample inventory</button></div>`); break;
+      case 'simulate-import': closeModal(); showToast('426 rows processed','388 ready to publish · 21 missing condition · 9 duplicates · 8 require review.'); break;
+      case 'inventory-detail': {
+        const p=inventory[Number(target.dataset.index)]; openModal(`${modalHead('INVENTORY INTERVENTION',p.pn,p.desc+' · '+p.platform)}<div class="inventory-modal-grid"><div><span>Visible ask</span><b>${money(p.price)}</b></div><div><span>Private floor</span><b>${money(p.floor)}</b></div><div><span>Demand index</span><b>${p.demand}</b></div><div><span>Document readiness</span><b>${p.docs}%</b></div><div><span>Inventory age</span><b>${p.age} days</b></div><div><span>Best next action</span><b>${p.age>60?'Commission Mission':'Targeted match'}</b></div></div><div class="modal-actions"><button class="btn">Create Same-Day price</button><button class="btn primary" data-action="close-modal">Accept Vector plan</button></div>`); break;
+      }
+      case 'build-package': state.packageBuilt=false; renderPackages(); showToast('Package Hunter analyzing','Searching verified inventory, private campaigns, trades, and Commission Missions…','✦'); setTimeout(()=>{state.packageBuilt=true;renderPackages();showToast('Package assembled','$33,500 modeled buyer advantage across four sellers.');},1100); break;
+      case 'package-bridge': switchView('bridge'); showToast('Multi-seller workflow opened','Four private seller advisors are reviewing the package mandate.'); break;
+      case 'run-bridge': state.bridgeScore=Math.min(96,state.bridgeScore+7); renderBridge(); showToast('Negotiation cycle complete',`Compatibility increased to ${state.bridgeScore}%.`); break;
+      case 'grant-authority': state.bridgeScore=Math.min(97,state.bridgeScore+5); renderBridge(); showToast('Limited authority granted','Vector may propose the selected structure but cannot bind the user.'); break;
+      case 'unlock-deal-room': switchView('close'); showToast('Deal Room unlocked','Both parties accepted the structured bridge.'); break;
+      case 'upload-proof': state.proofUploaded=true; state.closeStep=Math.max(state.closeStep,3); renderClose(); showToast('Proof package linked','PO, shipment tracking, and acknowledgment simulated.'); break;
+      case 'sign-deal': state.signed=true; state.closeStep=Math.max(state.closeStep,2); renderClose(); showToast('Agreement signed','Electronic-signature audit evidence is attached.'); break;
+      case 'advance-close': if(!state.signed){showToast('Signature required','Complete the Deal Card signature first.','!');} else if(!state.proofUploaded){showToast('Fulfillment proof required','Add one lightweight evidence item to continue.','!');} else {state.verified=true;state.closeStep=4;renderClose();showToast('Verified Close complete','The Impact Ledger and reliability graph were updated.');} break;
+      case 'paylink': openModal(`${modalHead('AEROLOOP PAYLINK','Advisor compensation due','The aviation-part purchase remains direct between buyer and seller. This PayLink covers only the agreed AeroLoop service fee.')}<div class="pay-options"><button><b>ACH bank payment</b><span>Recommended for B2B fees · lower processing cost</span></button><button><b>Credit card</b><span>Immediate confirmation</span></button><button><b>Wire instructions</b><span>For enterprise campaigns</span></button></div><div class="payment-total"><span>Amount due</span><strong>$149</strong><small>Due within 5 business days under Advisor Service Order</small></div><div class="modal-actions"><button class="btn" data-action="close-modal">Cancel</button><button class="btn primary" data-action="complete-payment">Simulate ACH payment</button></div>`); break;
+      case 'complete-payment': closeModal(); state.verified=true; state.closeStep=4; renderClose(); showToast('Payment confirmed','Advisor fee paid and Verified Close finalized.'); break;
+      case 'export-report': showToast('Report generated','Investor-grade PDF export is represented in this demo.'); break;
+      case 'show-alerts': openModal(`${modalHead('VECTOR ALERTS','Four actions need attention','Only high-impact events are surfaced.')}<div class="alert-list"><div><b>7003110-901 reached 78% compatibility</b><span>Two changes unlock FastClose.</span></div><div><b>Package buyer detected</b><span>11 of 12 target lines can be assembled.</span></div><div><b>Availability expiring</b><span>7510784-904 will leave active AOG matching.</span></div><div><b>Verified Close ready</b><span>One proof item remains.</span></div></div>`); break;
+      case 'create-sell': closeModal(); formModal('sell'); break;
+      case 'create-buy': closeModal(); formModal('buy'); break;
+      case 'create-requirement': formModal('buy'); break;
+      case 'save-opportunity': closeModal(); showToast('Opportunity activated','Vector is now continuously searching and improving the match.'); break;
+      case 'create-package': closeModal(); switchView('packages'); break;
+      case 'create-mission': closeModal(); showToast('Commission Mission created','Seller authority, attribution, and disclosed compensation are active.'); break;
+      case 'create-repair': closeModal(); switchView('match'); showToast('Repair / Replace mode active','Outright, exchange, repair, and trade paths are now ranked.'); break;
+      case 'create-trade': closeModal(); switchView('bridge'); showToast('Trade Mesh opened','Vector is modeling part plus cash structures.'); break;
+      default: break;
+    }
+  }
+
+  function ambient() {
+    const canvas=$('#ambientCanvas'),ctx=canvas.getContext('2d'); let w,h,dpr,points=[];
+    function resize(){dpr=Math.min(devicePixelRatio||1,2);w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);points=Array.from({length:46},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,r:Math.random()*1.5+.3}));}
+    function draw(){ctx.clearRect(0,0,w,h);for(const p of points){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(104,142,255,.28)';ctx.fill();}for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++){const a=points[i],b=points[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy);if(d<130){ctx.strokeStyle=`rgba(71,218,255,${(1-d/130)*.055})`;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}requestAnimationFrame(draw)}
+    resize();addEventListener('resize',resize);draw();
+  }
+
+  document.addEventListener('click', (e) => {
+    const actionEl = e.target.closest('[data-action]');
+    if (actionEl) { e.preventDefault(); handleAction(actionEl.dataset.action, actionEl); }
+    const nav = e.target.closest('[data-view]');
+    if(nav && nav.classList.contains('nav-item')) switchView(nav.dataset.view);
+    const persona = e.target.closest('[data-persona]');
+    if(persona){ state.persona=persona.dataset.persona; $('#personaMenu').classList.remove('open'); syncPersona(); switchView(state.persona==='investor'?'investor':'command'); }
+    const strategy = e.target.closest('[data-strategy]');
+    if(strategy){state.twinStrategy=strategy.dataset.strategy;renderInventory();}
+    const structure = e.target.closest('[data-structure]');
+    if(structure){state.selectedStructure=structure.dataset.structure;renderBridge();}
+  });
+
+  document.addEventListener('input', (e) => {
+    const type=e.target.dataset.range;
+    if(!type)return;
+    const val=Number(e.target.value);
+    if(type==='buyerMax')state.buyerMax=val;
+    if(type==='sellerMin')state.sellerMin=val;
+    if(type==='docs')state.docs=val;
+    if(type==='aggression')state.advisorAggression=val;
+    if(type==='flexibility')state.priceFlexibility=val;
+    if(['buyerMax','sellerMin','docs'].includes(type)){renderMatch();renderCommand();}
+    else if(type==='aggression') $('#advisorAggressionLabel')?.replaceChildren(document.createTextNode(val+'%'));
+    else if(type==='flexibility') $('#priceFlexLabel')?.replaceChildren(document.createTextNode(val+'%'));
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Escape') closeModal();
+    if(e.key==='Enter' && e.target.id==='vectorChatInput') handleAction('send-vector',e.target);
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#globalSearch')?.focus();}
+    if(e.key==='Enter'&&e.target.id==='globalSearch'){
+      const q=e.target.value.trim(); if(q){switchView('match');showToast('Vector search complete',`Showing the strongest paths for “${q}”.`);}
+    }
+  });
+
+  $('#personaToggle').addEventListener('click',()=>$('#personaMenu').classList.toggle('open'));
+  $('#railCollapse').addEventListener('click',()=>document.body.classList.toggle('rail-mini'));
+  $('#mobileMenu').addEventListener('click',()=>$('.rail').classList.toggle('mobile-open'));
+  $('#vectorFab').addEventListener('click',()=>$('#vectorDock').classList.toggle('open'));
+  $('#vectorDockClose').addEventListener('click',()=>$('#vectorDock').classList.remove('open'));
+
+  renderAll();
+  ambient();
+})();
+
+</script>
+</body>
+</html>
