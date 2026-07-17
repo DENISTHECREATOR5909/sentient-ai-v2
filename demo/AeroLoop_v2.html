@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#05070b"/>
+<title>AeroLoop — Vector Advisor · Demo v2</title>
+<style>
+:root{
+  --bg:#05070b;--bg2:#090d14;--surface:#0d121b;--surface2:#111925;
+  --line:rgba(180,205,255,.10);--line2:rgba(180,205,255,.19);--line3:rgba(180,205,255,.32);
+  --text:#f6f8ff;--muted:#8f9aac;--muted2:#616c7d;
+  /* six semantic accents only */
+  --cyan:#43ddff;   /* advisor intelligence / primary action */
+  --blue:#7587ff;   /* buyer / sourcing */
+  --gold:#ffc875;   /* seller / value / concession */
+  --lime:#91f4a9;   /* verified / eligible / approved */
+  --red:#ff6d80;    /* blocked / conflict / risk */
+  --purple:#b78cff; /* private / permissioned / protected */
+  --shadow:0 28px 90px rgba(0,0,0,.5);--shadow2:0 10px 40px rgba(0,0,0,.34);
+  --r1:14px;--r2:20px;--r3:28px;--font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(circle at 82% 8%,rgba(82,102,255,.10),transparent 34%),
+  radial-gradient(circle at 12% 92%,rgba(67,221,255,.06),transparent 34%),var(--bg);
+  color:var(--text);font-family:var(--font);overflow-x:hidden}
+button,input,select,textarea{font:inherit}button{color:inherit;cursor:pointer}
+::selection{background:rgba(117,135,255,.35)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px}
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.06em}
+.mark{position:relative;width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#7a8cff,#4bdfff 52%,#5ef3d5);box-shadow:0 0 34px rgba(82,102,255,.32);overflow:hidden}
+.mark:before{content:"";position:absolute;inset:3px;border-radius:10px;background:#080c13}
+.mark i,.mark b{position:absolute;z-index:2;background:linear-gradient(90deg,var(--cyan),var(--blue));height:3px;border-radius:9px;left:9px;transform-origin:left}
+.mark i{width:20px;top:13px;transform:rotate(28deg)}.mark b{width:16px;top:22px;transform:rotate(-28deg)}
+.brand small{font-size:9px;color:var(--cyan);border:1px solid rgba(67,221,255,.25);padding:3px 6px;border-radius:999px;margin-left:2px}
+.status{font-size:10px;letter-spacing:.16em;color:#8792a7;font-weight:800;display:flex;align-items:center;gap:8px}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:blink 1.6s infinite}
+/* stepper */
+.steps{display:flex;gap:8px;margin:20px 0 6px;flex-wrap:wrap}
+.step{flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:rgba(255,255,255,.02);opacity:.5;transition:.25s}
+.step.on{opacity:1;border-color:rgba(67,221,255,.32);background:rgba(67,221,255,.05)}
+.step.done{opacity:1;border-color:rgba(145,244,169,.25)}
+.step span{font-size:8px;letter-spacing:.14em;color:var(--muted);font-weight:900}
+.step b{display:block;font-size:12px;margin-top:6px}
+.step.done b:after{content:"  ✓";color:var(--lime)}
+/* panels */
+.panel{position:relative;border:1px solid var(--line);border-radius:var(--r2);background:linear-gradient(145deg,rgba(15,22,34,.78),rgba(8,12,19,.82));box-shadow:var(--shadow2);overflow:hidden}
+.pad{padding:20px}
+.eyebrow{font-size:9px;letter-spacing:.18em;color:var(--cyan);font-weight:900}
+h1{font-size:clamp(30px,4.6vw,52px);letter-spacing:-.045em;line-height:1;margin:12px 0}
+h1 em{font-style:normal;background:linear-gradient(95deg,#fff,#9eaaff 40%,#45deff 75%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:15px;line-height:1.65;color:#aeb8c8;max-width:640px}
+.tag{font-size:12px;color:var(--muted);margin-top:14px;font-style:italic}
+.stage{display:none;margin-top:14px}.stage.on{display:block;animation:in .3s ease}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+/* chat */
+.chat{min-height:420px;display:flex;flex-direction:column}
+.chat-head{display:flex;align-items:center;gap:11px;padding:15px 17px;border-bottom:1px solid var(--line)}
+.orb{width:32px;height:32px;border-radius:50%;flex:none;background:radial-gradient(circle at 34% 30%,#fff,#8beaff 16%,#6e7eff 48%,#2a356d 72%,#0d1224);box-shadow:0 0 20px rgba(103,126,255,.6);animation:orb 4s infinite}
+.chat-head b{font-size:12px}.chat-head span{font-size:8px;color:var(--muted);display:block;margin-top:3px}
+.chat-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:430px}
+.bub{max-width:86%;padding:11px 13px;border-radius:14px;font-size:12.5px;line-height:1.55;animation:in .25s ease}
+.bub.a{align-self:flex-start;border:1px solid rgba(117,135,255,.18);background:rgba(117,135,255,.07)}
+.bub.u{align-self:flex-end;border:1px solid var(--line);background:rgba(255,255,255,.05)}
+.opts{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 14px}
+.opt{border:1px solid var(--line2);background:rgba(255,255,255,.03);padding:9px 12px;border-radius:11px;font-size:11px;font-weight:700;transition:.15s}
+.opt:hover{border-color:var(--cyan);background:rgba(67,221,255,.08);transform:translateY(-1px)}
+.typing{display:flex;gap:4px;padding:10px 14px}.typing i{width:6px;height:6px;border-radius:50%;background:#78849a;animation:typing 1.2s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+/* goal contract side */
+.gc{align-self:start;position:sticky;top:14px}
+.gc h3{font-size:11px;margin:0 0 4px;letter-spacing:.02em}
+.gc .sub{font-size:8px;color:var(--muted);margin-bottom:12px}
+.gc-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.gc-row:last-child{border-bottom:0}
+.gc-row span{font-size:9px;color:var(--muted)}
+.gc-row b{font-size:10px;text-align:right;color:#dfe5f2}
+.gc-row b.pending{color:var(--muted2);font-style:italic;font-weight:500}
+.gc-row b.prot{color:var(--purple)}
+.masklock{font-size:8px;color:var(--purple);border:1px solid rgba(183,140,255,.28);background:rgba(183,140,255,.08);padding:3px 6px;border-radius:999px}
+/* threshold */
+.thresh{margin-top:12px;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(255,255,255,.02)}
+.thresh label{font-size:9px;color:var(--muted);display:flex;justify-content:space-between;font-weight:800;letter-spacing:.04em}
+.thresh input{width:100%;accent-color:var(--cyan);margin:11px 0 6px}
+.thresh .live{font-size:11px;color:var(--cyan)}
+.thresh .live b{color:#fff}
+/* buttons */
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.03);padding:11px 15px;border-radius:12px;font-size:11px;font-weight:900;transition:.15s}
+.btn:hover{transform:translateY(-1px);border-color:var(--line3)}
+.btn.primary{border:0;background:linear-gradient(110deg,#7184ff,#50dff5);color:#050810;box-shadow:0 12px 30px rgba(82,102,255,.22)}
+.btn.ghost{background:transparent}
+.btn.lime{border-color:rgba(145,244,169,.28);background:rgba(145,244,169,.08);color:#cbffd5}
+.btn.gold{border-color:rgba(255,200,117,.28);background:rgba(255,200,117,.08);color:#ffdfa6}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+/* working animation */
+.working{text-align:center;padding:46px 20px}
+.working .orb{width:64px;height:64px;margin:0 auto 20px}
+.sweep{max-width:440px;margin:0 auto;text-align:left;display:grid;gap:8px}
+.sweep .s{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);opacity:.35;transition:.3s}
+.sweep .s.on{opacity:1;color:#dfe5f2}
+.sweep .s i{width:16px;height:16px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;flex:none}
+.sweep .s.on i{border-color:var(--lime);color:var(--lime)}
+.discard{margin-top:18px;font-size:11px;color:var(--muted)}
+.discard b{color:var(--cyan)}
+/* opportunity card */
+.opp{border:1px solid rgba(67,221,255,.22);border-radius:var(--r2);background:linear-gradient(140deg,rgba(67,221,255,.05),rgba(117,135,255,.03));overflow:hidden}
+.opp-top{display:flex;justify-content:space-between;gap:16px;padding:18px 18px 12px}
+.opp-kick{font-size:8px;letter-spacing:.15em;color:var(--gold);font-weight:900}
+.opp-pn{font-size:18px;font-weight:900;letter-spacing:-.02em;margin-top:7px}
+.opp-desc{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5}
+.gauge{width:92px;height:92px;flex:none;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--cyan) calc(var(--v,74)*1%),rgba(255,255,255,.07) 0)}
+.gauge:before{content:"";position:absolute;inset:7px;border-radius:50%;background:#0a1018;border:1px solid var(--line)}
+.gauge div{position:relative;text-align:center}.gauge strong{font-size:28px;letter-spacing:-.05em}.gauge span{font-size:7px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 4px}
+.chip{font-size:9px;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:#cfd6e5;background:rgba(255,255,255,.02)}
+.chip.prot{border-color:rgba(183,140,255,.28);background:rgba(183,140,255,.08);color:#d8c6ff}
+.chip.lime{border-color:rgba(145,244,169,.24);background:rgba(145,244,169,.07);color:#cbffd5}
+.opp-action{margin:12px 18px 0;padding:13px;border:1px solid rgba(145,244,169,.2);background:rgba(145,244,169,.05);border-radius:14px;display:flex;align-items:center;gap:12px}
+.opp-action .ic{width:34px;height:34px;border-radius:10px;background:rgba(145,244,169,.1);color:var(--lime);display:grid;place-items:center;font-weight:900;flex:none}
+.opp-action b{font-size:11px}.opp-action p{font-size:9px;color:var(--muted);margin:3px 0 0}
+.opp-action .delta{margin-left:auto;text-align:right;font-size:9px;color:var(--muted)}
+.opp-action .delta b{font-size:13px;color:var(--lime)}
+.opp-foot{display:flex;align-items:center;gap:9px;padding:14px 18px 18px}
+.time{font-size:9px;color:var(--muted);margin-left:auto}
+/* drawer */
+.drawer{border-top:1px solid var(--line);max-height:0;overflow:hidden;transition:max-height .4s ease}
+.drawer.open{max-height:900px}
+.drawer-in{padding:16px 18px}
+.dt{font-size:8px;letter-spacing:.14em;color:var(--muted);font-weight:900;margin:14px 0 8px}
+.dt:first-child{margin-top:0}
+.gates{display:grid;gap:6px}
+.gate{display:flex;align-items:center;gap:9px;font-size:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.015)}
+.gate .p{font-size:8px;font-weight:900;padding:3px 7px;border-radius:999px;margin-left:auto}
+.gate .p.pass{color:#cbffd5;background:rgba(145,244,169,.1)}
+.gate .p.cond{color:#ffdfa6;background:rgba(255,200,117,.1)}
+.fac{display:grid;grid-template-columns:120px 1fr 30px;align-items:center;gap:9px;margin-bottom:6px}
+.fac label{font-size:9px;color:#9ca7b8}
+.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.fac b{font-size:9px;color:#aab4c4;text-align:right}
+/* bridge / private price */
+.bridge{display:grid;grid-template-columns:1fr 132px 1fr;gap:10px;align-items:center;margin-top:6px}
+@media(max-width:620px){.bridge{grid-template-columns:1fr}}
+.pcard{border:1px solid rgba(183,140,255,.22);border-radius:13px;padding:13px;background:rgba(183,140,255,.05);text-align:center}
+.pcard span{font-size:8px;letter-spacing:.1em;color:var(--muted);display:block}
+.pcard strong{display:block;font-size:22px;color:var(--purple);letter-spacing:2px;margin:8px 0 4px}
+.pcard small{font-size:8px;color:#8f83b0}
+.bmid{text-align:center}
+.bmid .lime{font-size:10px;color:var(--lime);font-weight:800}
+.bmid small{font-size:8px;color:var(--muted);display:block;margin-top:5px;line-height:1.4}
+/* advice (two-directional) */
+.advice{margin-top:8px;border:1px solid rgba(255,200,117,.2);background:rgba(255,200,117,.045);border-radius:13px;padding:13px}
+.advice b{font-size:10px;color:#ffdfa6}
+.advice p{font-size:10px;color:#c7b48f;line-height:1.5;margin:6px 0 0}
+/* ask vector */
+.ask{margin-top:8px}
+.ask .q{display:inline-block;margin:5px 6px 0 0;border:1px solid var(--line2);background:rgba(117,135,255,.06);padding:7px 10px;border-radius:10px;font-size:10px;font-weight:700}
+.ask .q:hover{border-color:var(--cyan)}
+.ans{margin-top:10px;font-size:11px;line-height:1.6;color:#cdd6e6;border-left:2px solid var(--cyan);padding:2px 0 2px 12px;display:none}
+.ans.show{display:block;animation:in .25s}
+/* deal card */
+.deal-hero{padding:15px;border:1px solid rgba(117,135,255,.2);background:linear-gradient(130deg,rgba(117,135,255,.1),rgba(67,221,255,.03));border-radius:14px}
+.deal-hero span{font-size:8px;color:#aeb8ff;letter-spacing:.12em;font-weight:900}
+.deal-hero h3{font-size:16px;margin:8px 0 4px}.deal-hero p{font-size:10px;color:var(--muted);margin:0}
+.dline{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11px}
+.dline span{color:var(--muted)}.dline b{text-align:right}
+.dtot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:13px;border:1px solid rgba(145,244,169,.18);background:rgba(145,244,169,.05);border-radius:12px}
+.dtot span{font-size:9px;color:#9fb4a3}.dtot strong{font-size:20px;color:#c8ffd2}
+/* notification dial */
+.dial{margin-top:14px}
+.dial h3{font-size:11px;margin:0 0 4px}.dial .sub{font-size:9px;color:var(--muted);margin-bottom:12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:rgba(255,255,255,.02);padding:8px 11px;border-radius:10px;font-size:10px;font-weight:800;color:var(--muted)}
+.seg button.on{border-color:var(--cyan);background:rgba(67,221,255,.08);color:#fff}
+.dialnote{font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;border-left:2px solid var(--line2);padding-left:11px}
+/* toast */
+.toasts{position:fixed;right:18px;top:18px;z-index:80;display:grid;gap:8px}
+.toast{width:300px;border:1px solid var(--line2);background:rgba(10,15,24,.96);backdrop-filter:blur(18px);border-radius:13px;padding:12px;box-shadow:var(--shadow2);display:grid;grid-template-columns:28px 1fr;gap:10px;animation:slide .3s ease}
+.toast .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:12px}
+.toast.op .ic{background:rgba(67,221,255,.1);color:var(--cyan)}
+.toast.ur .ic{background:rgba(255,109,128,.1);color:var(--red)}
+.toast.si .ic{background:rgba(143,154,172,.12);color:var(--muted)}
+.toast b{font-size:10px}.toast p{font-size:9px;color:var(--muted);margin:3px 0 0;line-height:1.4}
+/* footer note */
+.foot{margin-top:22px;font-size:10px;color:var(--muted2);line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+.foot b{color:var(--muted)}
+.reset{margin-left:auto}
+@keyframes blink{50%{opacity:.4;transform:scale(.85)}}
+@keyframes orb{50%{transform:translateY(-2px) scale(1.05)}}
+@keyframes typing{50%{transform:translateY(-3px);background:#cbd5e5}}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+@keyframes slide{from{opacity:0;transform:translateX(16px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="toasts" id="toasts"></div>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="mark"><i></i><b></b></span> AEROLOOP <small>DEMO v2</small></div>
+    <div class="status"><i></i> VECTOR ADVISOR · ONLINE</div>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="steps">
+    <div class="step on" id="st0"><span>STEP 01</span><b>Tell Vector your goal</b></div>
+    <div class="step" id="st1"><span>STEP 02</span><b>Vector works silently</b></div>
+    <div class="step" id="st2"><span>STEP 03</span><b>One qualified opportunity</b></div>
+    <div class="step" id="st3"><span>STEP 04</span><b>Approve &amp; set alerts</b></div>
+  </div>
+
+  <!-- STAGE 0: INTRO + INTAKE -->
+  <div class="stage on" id="stage0">
+    <div class="panel pad" style="margin-bottom:14px">
+      <div class="eyebrow">TRANSACTION INTELLIGENCE FOR AVIATION</div>
+      <h1>Don't list it. <em>Tell your advisor.</em></h1>
+      <div class="lede">You have one part to move. Instead of blasting an RFQ and chasing quotes, you tell Vector your goal and your limits — once — and it brings back only a real, qualified path. This is a live walk-through with a single avionics unit.</div>
+      <div class="tag">"The industry doesn't lack inventory. It lacks intelligence."</div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel chat">
+        <div class="chat-head"><span class="orb"></span><div><b>Vector</b><span>Your commercial advisor · building your Goal Contract</span></div></div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="opts" id="chatOpts"></div>
+      </div>
+
+      <div>
+        <div class="panel pad gc">
+          <h3>Goal Contract</h3>
+          <div class="sub">Built from your answers · your optimization target &amp; authority boundary</div>
+          <div class="gc-row"><span>Objective</span><b class="pending" id="gcObj">—</b></div>
+          <div class="gc-row"><span>Part</span><b class="pending" id="gcPart">—</b></div>
+          <div class="gc-row"><span>Top priority</span><b class="pending" id="gcPri">—</b></div>
+          <div class="gc-row"><span>Private minimum</span><b class="pending" id="gcMin">—</b></div>
+          <div class="gc-row"><span>Allowed paths</span><b class="pending" id="gcPaths">—</b></div>
+          <div class="gc-row"><span>Identity release</span><b class="pending" id="gcId">—</b></div>
+
+          <div class="thresh" id="threshBox" style="display:none">
+            <label>Match threshold <span id="thVal">85%+</span></label>
+            <input type="range" min="55" max="95" value="85" step="5" id="thresh"/>
+            <div class="live" id="thLive"><b>1</b> qualified opportunity would reach you</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 1: WORKING -->
+  <div class="stage" id="stage1">
+    <div class="panel working">
+      <div class="orb"></div>
+      <div class="eyebrow">SILENCE IS A FEATURE</div>
+      <h1 style="font-size:26px;margin:10px 0 22px">Vector is working so you don't have to</h1>
+      <div class="sweep" id="sweep">
+        <div class="s" data-i="0"><i>1</i> Reading your unit &amp; representing its true status</div>
+        <div class="s" data-i="1"><i>2</i> Applying hard eligibility gates (deterministic)</div>
+        <div class="s" data-i="2"><i>3</i> Testing compatibility with other advisors — privately</div>
+        <div class="s" data-i="3"><i>4</i> Comparing value-creating paths before price</div>
+        <div class="s" data-i="4"><i>5</i> Checking freshness, authority &amp; trust confidence</div>
+      </div>
+      <div class="discard" id="discard"></div>
+    </div>
+  </div>
+
+  <!-- STAGE 2: DECISION QUEUE -->
+  <div class="stage" id="stage2">
+    <div class="panel pad" style="margin-bottom:12px">
+      <div class="eyebrow">DECISION QUEUE · CALM ON TOP, RECEIPTS ON DEMAND</div>
+      <h1 style="font-size:24px;margin:10px 0 4px">Vector rejected 412 combinations. Here is the one worth your time.</h1>
+      <div class="lede" style="font-size:13px">One card. One number. One action. Everything behind it is one click away — nothing is a magic number.</div>
+    </div>
+
+    <div class="opp" id="oppCard">
+      <div class="opp-top">
+        <div>
+          <div class="opp-kick">QUALIFIED BRIDGE OPPORTUNITY</div>
+          <div class="opp-pn">PN 7003110-901 — EFIS Display Unit</div>
+          <div class="opp-desc">As removed · partial trace · availability confirmed 26 min ago · your unit</div>
+        </div>
+        <div class="gauge" style="--v:74"><div><strong>74</strong><span>Match</span></div></div>
+      </div>
+      <div class="chips">
+        <span class="chip lime">Buyer verified</span>
+        <span class="chip lime">Purchase authority</span>
+        <span class="chip">Accepts evaluation path</span>
+        <span class="chip prot">Protected: identity</span>
+        <span class="chip prot">minimum</span>
+        <span class="chip prot">exact location</span>
+        <span class="chip prot">customer history</span>
+      </div>
+      <div class="opp-action">
+        <div class="ic">▶</div>
+        <div><b>Recommended action — authorize an independent bench evaluation</b><p>Turns an as-removed unit a buyer can't yet accept into one they can, without touching your floor.</p></div>
+        <div class="delta">after action<br><b>74 → 89</b></div>
+      </div>
+      <div class="opp-foot">
+        <button class="btn ghost" id="whyBtn">Why this? Show the receipts ▾</button>
+        <span class="time">Estimated of your time: <b style="color:#dfe5f2">4 minutes</b></span>
+      </div>
+
+      <!-- DRAWER -->
+      <div class="drawer" id="drawer">
+        <div class="drawer-in">
+          <div class="dt">HARD ELIGIBILITY — DETERMINISTIC, NOT AVERAGED</div>
+          <div class="gates">
+            <div class="gate">Part identity — exact PN match <span class="p pass">PASS</span></div>
+            <div class="gate">Quantity — 1 of 1 accepted <span class="p pass">PASS</span></div>
+            <div class="gate">Documentation — partial trace, buyer accepts <b style="margin:0 4px">after evaluation</b> <span class="p cond">CONDITIONAL</span></div>
+            <div class="gate">Operational — logistics &amp; deadline feasible <span class="p pass">PASS</span></div>
+            <div class="gate">Authority — you own it; buyer purchase-ready <span class="p pass">PASS</span></div>
+          </div>
+
+          <div class="dt">COMPATIBILITY — WITH CONFIDENCE, NOT A BARE SCORE</div>
+          <div class="fac"><label>Technical</label><div class="bar"><i style="width:94%"></i></div><b>94</b></div>
+          <div class="fac"><label>Documentation</label><div class="bar"><i style="width:62%"></i></div><b>62</b></div>
+          <div class="fac"><label>Commercial</label><div class="bar"><i style="width:78%"></i></div><b>78</b></div>
+          <div class="fac"><label>Operational</label><div class="bar"><i style="width:88%"></i></div><b>88</b></div>
+          <div class="fac"><label>Trust confidence</label><div class="bar"><i style="width:83%"></i></div><b>83</b></div>
+
+          <div class="dt">PRIVATE-PRICE BRIDGE — COMPUTED SERVER-SIDE, VALUES NEVER EXCHANGED</div>
+          <div class="bridge">
+            <div class="pcard"><span>YOUR FLOOR</span><strong>••••</strong><small>protected — never disclosed</small></div>
+            <div class="bmid"><div class="lime">Bridgeable ✓</div><small>Neither side's number is shared. Only "a responsible change can close this" crosses the wire.</small></div>
+            <div class="pcard"><span>BUYER CEILING</span><strong>••••</strong><small>protected — never disclosed</small></div>
+          </div>
+
+          <div class="dt">MARKET CONTEXT — ADVICE RUNS BOTH DIRECTIONS</div>
+          <div class="advice">
+            <b>Hold your floor — don't discount.</b>
+            <p>Surplus for this display family is unusually thin this quarter, and 3 buyers requested it in the last 14 days. Vector recommends the evaluation bridge over any price reduction; if this buyer lapses, raising your target 6–9% is defensible. Cutting price here would leave money on the table.</p>
+          </div>
+
+          <div class="dt">BEFORE YOU MEET ANYONE — INTERROGATE IT</div>
+          <div class="ask">
+            <button class="q" data-a="a1">Why this buyer?</button>
+            <button class="q" data-a="a2">What's the risk?</button>
+            <button class="q" data-a="a3">What am I not seeing?</button>
+            <div class="ans" id="ans"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn lime" id="approveBtn">Authorize evaluation &amp; assemble Deal Card</button>
+      <button class="btn gold" id="raiseBtn">Adjust — hold / raise my target instead</button>
+      <button class="btn ghost" id="dismissBtn">Not now</button>
+    </div>
+  </div>
+
+  <!-- STAGE 3: DEAL CARD + ALERTS -->
+  <div class="stage" id="stage3">
+    <div class="grid2">
+      <div class="panel pad">
+        <div class="eyebrow">DECISION-READY DEAL CARD · BLINDED BEFORE IDENTITY</div>
+        <div class="deal-hero" style="margin-top:12px">
+          <span>MUTUAL APPROVAL BEFORE IDENTITY UNLOCK</span>
+          <h3>EFIS Display Unit — evaluation bridge</h3>
+          <p>Both sides approve this exact structure before any name, document or location is released.</p>
+        </div>
+        <div style="margin-top:14px">
+          <div class="dline"><span>Structure</span><b>Outright after independent bench evaluation</b></div>
+          <div class="dline"><span>Part &amp; condition</span><b>PN 7003110-901 · as removed · partial trace</b></div>
+          <div class="dline"><span>Evidence status</span><b>Evaluation slot reserved · tag scan pending</b></div>
+          <div class="dline"><span>Your net (protected math)</span><b>At or above your floor — guaranteed by the engine</b></div>
+          <div class="dline"><span>AeroLoop fee</span><b>Disclosed &amp; capped · visible before you approve</b></div>
+          <div class="dline"><span>Identity</span><b>Unlocks only on mutual approval</b></div>
+          <div class="dtot"><span>PROBABILITY OF A VERIFIED CLOSE</span><strong>89%</strong></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="signBtn">Approve my side of the Deal Card</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel pad dial">
+          <h3>How should Vector reach you?</h3>
+          <div class="sub">Meaningful only. Silence by default. You tune the bar and the voice.</div>
+          <div class="seg" id="segLevel">
+            <button data-l="silent">Silent</button>
+            <button data-l="digest">Digest</button>
+            <button class="on" data-l="opportunity">Opportunity</button>
+            <button data-l="urgent">Urgent only</button>
+          </div>
+          <div style="height:12px"></div>
+          <div class="sub" style="margin:0 0 8px">Advisor voice</div>
+          <div class="seg" id="segVoice">
+            <button class="on" data-v="terse">Terse terminal</button>
+            <button data-v="jarvis">Conversational</button>
+          </div>
+          <div class="dialnote" id="dialNote">You'll be interrupted only when a credible executable path exists — like the one you just approved.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel pad" id="closeBox" style="margin-top:14px;display:none">
+      <div class="eyebrow" style="color:var(--lime)">OUTCOME PASSPORT · VERIFIED CLOSE PATH</div>
+      <h1 style="font-size:22px;margin:10px 0 6px">That's the whole loop — with one part and none of your position exposed.</h1>
+      <div class="lede" style="font-size:13px">You told Vector a goal and a floor. It rejected the noise, protected your minimum, found a buyer you'd never have reached, and structured a path you'd not have built alone. Every step is on the ledger — and every close like this makes the next recommendation smarter.</div>
+      <div class="row">
+        <button class="btn ghost reset" id="resetBtn">↻ Run the walk-through again</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>Demo v2 — pilot-facing wedge.</b> Seller-side liquidation of one avionics LRU, the flow that carries the whole thesis: conversational intake → silent qualification → one interrogatable opportunity → protected private-price bridge → decision-ready Deal Card. Logic is scripted for the walk-through; the private minimum is never displayed or approximated, and hard eligibility is shown as a deterministic gate, on purpose. Not a promise of commercial, legal or regulatory results.
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)];
+  const body=$('#chatBody'), opts=$('#chatOpts');
+
+  function toast(kind,icon,title,msg){
+    const t=document.createElement('div'); t.className='toast '+kind;
+    t.innerHTML=`<div class="ic">${icon}</div><div><b>${title}</b><p>${msg}</p></div>`;
+    $('#toasts').appendChild(t); setTimeout(()=>{t.style.transition='.4s';t.style.opacity='0';t.style.transform='translateX(16px)';setTimeout(()=>t.remove(),400);},4200);
+  }
+  const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+  function say(text){return new Promise(async(res)=>{
+    const typ=document.createElement('div'); typ.className='typing'; typ.innerHTML='<i></i><i></i><i></i>';
+    body.appendChild(typ); body.scrollTop=body.scrollHeight; await wait(620); typ.remove();
+    const b=document.createElement('div'); b.className='bub a'; b.innerHTML=text; body.appendChild(b); body.scrollTop=body.scrollHeight; res();
+  });}
+  function you(text){const b=document.createElement('div');b.className='bub u';b.textContent=text;body.appendChild(b);body.scrollTop=body.scrollHeight;}
+  function choices(list){return new Promise(res=>{
+    opts.innerHTML='';
+    list.forEach(o=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=o.label;
+      btn.onclick=()=>{opts.innerHTML='';you(o.label);res(o);};opts.appendChild(btn);});
+  });}
+  const setGC=(id,val,cls)=>{const el=$(id);el.textContent=val;el.className=cls||'';};
+
+  // ---------- STAGE 0: scripted intake ----------
+  async function intake(){
+    await say("Morning, Denis. You've got one unit you want to move. Tell me the goal in your words — I'll only ask what actually changes the outcome.");
+    const g=await choices([
+      {label:"Sell this EFIS display — best recovery, no rush"},
+      {label:"Sell it fast, I need the cash"},
+    ]);
+    setGC('#gcObj', g.label.includes('fast')?'Fastest liquidity':'Maximum recovery');
+    setGC('#gcPri', g.label.includes('fast')?'Payment speed':'Net recovery');
+    setGC('#gcPart','EFIS Display · PN 7003110-901');
+
+    await say("Got it. Is this the only one — or is there more where it came from? It changes whether I play this as a one-off or open a package angle.");
+    await choices([{label:"Just this one for now"},{label:"There's more, but start with this"}]);
+
+    await say("Honest condition check — I'll represent it exactly as it is, never overstate it. What's the trace situation?");
+    const t=await choices([{label:"As removed, partial trace"},{label:"No trace at all"}]);
+    setGC('#gcPart', t.label.includes('No')?'EFIS · no trace represented':'EFIS · as removed · partial trace');
+
+    await say("Fine — that doesn't shut you out, it just changes <em>who</em> can accept it. Now the important one: your floor. Type it if you like — I lock it in a protected store, and I will <b>never</b> disclose it or even hint at it to the other side.");
+    await choices([{label:"Enter my private minimum 🔒"},{label:"I'd rather not say yet"}]);
+    setGC('#gcMin','•••• protected', 'prot');
+    $('#threshBox').style.display='block';
+    toast('si','🔒','Private minimum secured','Stored server-side. Excluded from analytics, prompts and every counterparty message.');
+
+    await say("Locked. Which paths am I allowed to work — beyond a straight sale?");
+    const p=await choices([
+      {label:"Outright, exchange, or repair evaluation"},
+      {label:"Outright only"},
+    ]);
+    setGC('#gcPaths', p.label.includes('only')?'Outright only':'Outright · exchange · repair eval');
+
+    await say("Last one. When may I release your identity to a counterparty?");
+    const id=await choices([
+      {label:"Only after we both approve a Deal Card"},
+      {label:"Once they're verified &amp; serious"},
+    ]);
+    setGC('#gcId', id.label.includes('Deal')?'After mutual Deal Card':'After verify + intent');
+
+    await say("That's everything I need — no forms, no 40-field upload. Set the bar for what earns your attention, then I'll go to work and stay quiet until I have something real.");
+    opts.innerHTML='';
+    const go=document.createElement('button'); go.className='btn primary'; go.style.margin='0 16px 14px';
+    go.textContent='Send Vector to work →'; go.onclick=()=>gotoStage(1); opts.appendChild(go);
+  }
+
+  // threshold live count
+  const thMap={55:'7',65:'5',75:'3',85:'1',95:'1'};
+  const thTxt={55:'incl. 4 research-grade leads',65:'incl. 3 bridge opportunities',75:'incl. 2 bridge opportunities',85:'that meets every mandatory gate',95:'high-priority only'};
+  $('#thresh').addEventListener('input',(e)=>{
+    const v=e.target.value; $('#thVal').textContent=v+'%+';
+    $('#thLive').innerHTML=`<b>${thMap[v]}</b> qualified ${thMap[v]==='1'?'opportunity':'opportunities'} — <span style="color:var(--muted)">${thTxt[v]}</span>`;
+  });
+
+  // ---------- STAGE 1: working ----------
+  async function working(){
+    const steps=$$('#sweep .s'); steps.forEach(s=>s.classList.remove('on'));
+    $('#discard').innerHTML='';
+    for(let i=0;i<steps.length;i++){await wait(560); steps[i].classList.add('on');}
+    await wait(500);
+    let n=0; const d=$('#discard');
+    const tick=setInterval(()=>{n+=Math.floor(7+Math.random()*23); d.innerHTML=`Silently discarded <b>${n}</b> weak combinations — stale, wrong authority, incompatible acceptance, or no responsible bridge…`;},90);
+    await wait(1500); clearInterval(tick);
+    d.innerHTML=`Silently discarded <b>412</b> weak combinations. Surfacing the <b>1</b> that clears your bar.`;
+    toast('op','◆','Qualified opportunity','A purchase-ready buyer meets every mandatory requirement after one bridge.');
+    await wait(1100); gotoStage(2);
+  }
+
+  // ---------- STAGE 2 interactions ----------
+  $('#whyBtn').onclick=()=>{const d=$('#drawer');const open=d.classList.toggle('open');$('#whyBtn').innerHTML=open?'Hide the receipts ▴':'Why this? Show the receipts ▾';};
+  const answers={
+    a1:"This buyer is a verified operator with represented purchase authority and a budget that clears the gate. They explicitly accept an evaluation path for partial-trace units — most buyers in this pool don't, which is why they're the one surfaced and 411 others weren't.",
+    a2:"The one soft spot is documentation: partial trace. The evaluation bridge is exactly what neutralizes it. Risk if you skip it: the buyer can't accept installation-ready, and the deal reverts to a lower core/teardown path. Nothing here can bind you before you approve.",
+    a3:"You're not seeing their identity, and you don't need to yet. You're also not seeing that this buyer lapsed one similar deal 9 months ago on slow document response — so I've pre-set a tighter evidence deadline in the Deal Card to protect your time."
+  };
+  $$('.ask .q').forEach(q=>q.onclick=()=>{const a=$('#ans');a.textContent=answers[q.dataset.a];a.classList.add('show');});
+  $('#approveBtn').onclick=()=>{toast('op','✓','Evaluation authorized','Bench slot reserved. Assembling your decision-ready Deal Card.');gotoStage(3);};
+  $('#raiseBtn').onclick=()=>{toast('si','↑','Strategy noted','Vector will hold your floor and model a 6–9% target lift against live demand.');const a=$('#drawer');a.classList.add('open');$('#whyBtn').innerHTML='Hide the receipts ▴';$('.advice').scrollIntoView({behavior:'smooth',block:'center'});};
+  $('#dismissBtn').onclick=()=>toast('si','—','Dismissed with learning','Understood. I\'ll fold this into what "worth your time" means and stay quiet.');
+
+  // ---------- STAGE 3 ----------
+  const notes={
+    silent:'Hard mismatches and noise never reach you. You\'ll see activity only when you open AeroLoop.',
+    digest:'Non-urgent changes batch into a once-a-day briefing. No pings in between.',
+    opportunity:'You\'ll be interrupted only when a credible executable path exists — like the one you just approved.',
+    urgent:'Silence unless something is time-critical: a closing authority window, a fraud or fulfillment risk.'
+  };
+  let voice='terse';
+  const voiceNote={terse:'',jarvis:' I\'ll say it like a colleague, not a dashboard.'};
+  function renderNote(){const l=$('#segLevel .on').dataset.l;$('#dialNote').textContent=notes[l]+voiceNote[voice];}
+  $$('#segLevel button').forEach(b=>b.onclick=()=>{$$('#segLevel button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderNote();});
+  $$('#segVoice button').forEach(b=>b.onclick=()=>{$$('#segVoice button').forEach(x=>x.classList.remove('on'));b.classList.add('on');voice=b.dataset.v;renderNote();
+    if(voice==='jarvis')toast('op','◆','Vector','"Good call, Denis. I\'ll keep your floor covered and only bring you the buyer once they\'ve earned the introduction."');});
+  $('#signBtn').onclick=()=>{$('#closeBox').style.display='block';$('#closeBox').scrollIntoView({behavior:'smooth'});toast('op','✓','Your side approved','Waiting on the buyer\'s approval of the same blinded structure. Identity unlocks when both sides sign.');};
+
+  // ---------- stage machine ----------
+  const stages=['#stage0','#stage1','#stage2','#stage3'];
+  function gotoStage(n){
+    stages.forEach((s,i)=>$(s).classList.toggle('on',i===n));
+    for(let i=0;i<4;i++){const st=$('#st'+i);st.classList.toggle('on',i===n);st.classList.toggle('done',i<n);}
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(n===1) working();
+  }
+  $('#resetBtn').onclick=()=>location.reload();
+
+  intake();
+})();
+</script>
+</body>
+</html>
