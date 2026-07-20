@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #05070b;
+  --line: rgba(180, 205, 255, 0.1);
+  --line2: rgba(180, 205, 255, 0.19);
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 82% 8%, rgba(82,102,255,.10), transparent 34%),
+    radial-gradient(circle at 12% 92%, rgba(67,221,255,.06), transparent 34%),
+    var(--bg);
+  color: #f6f8ff;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(117, 135, 255, 0.35); }
+
+/* Reusable primitives layered on Tailwind */
+@layer components {
+  .panel {
+    @apply relative rounded-[20px] border border-al-line overflow-hidden;
+    background: linear-gradient(145deg, rgba(15,22,34,.78), rgba(8,12,19,.82));
+    box-shadow: 0 10px 40px rgba(0,0,0,.34);
+  }
+  .eyebrow { @apply text-[9px] tracking-[0.18em] font-black text-al-cyan; }
+  .chip { @apply text-[9px] px-[9px] py-[6px] rounded-full border border-al-line text-[#cfd6e5] bg-white/[0.02]; }
+  .btn { @apply rounded-xl border border-al-line bg-white/[0.03] px-[15px] py-[11px] text-[11px] font-black transition; }
+  .btn:hover { @apply -translate-y-px border-al-line3; }
+  .btn-primary { @apply border-0 text-[#050810]; background: linear-gradient(110deg, #7184ff, #50dff5); box-shadow: 0 12px 30px rgba(82,102,255,.22); }
+  .btn-lime { @apply border text-[#cbffd5]; border-color: rgba(145,244,169,.28); background: rgba(145,244,169,.08); }
+  .btn-gold { @apply border text-[#ffdfa6]; border-color: rgba(255,200,117,.28); background: rgba(255,200,117,.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
