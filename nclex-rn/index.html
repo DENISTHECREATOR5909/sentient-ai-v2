@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NCLEX-RN Adaptive Practice Exam</title>
+<meta name="description" content="Offline, browser-based NCLEX-RN style computerized adaptive practice exam with Next Generation NCLEX item types.">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============================ START SCREEN ============================ -->
+<section id="screen-start" class="screen is-active">
+  <div class="start-wrap">
+    <header class="start-head">
+      <div class="brand-mark">RN</div>
+      <div>
+        <h1>NCLEX-RN&reg; Style Adaptive Practice Exam</h1>
+        <p class="sub">Computerized Adaptive Testing simulator &middot; Next Generation item types</p>
+      </div>
+    </header>
+
+    <div class="disclaimer" role="note">
+      <strong>Unofficial practice material.</strong> This simulator is an independent study tool. It is not
+      produced by, endorsed by, or affiliated with the National Council of State Boards of Nursing (NCSBN)
+      or Pearson VUE. Live NCLEX items are secure and confidential; every question here was written
+      originally for practice and mapped to the publicly published NCLEX-RN Test Plan client-need
+      categories. NCLEX&reg; and NCLEX-RN&reg; are registered trademarks of NCSBN.
+    </div>
+
+    <div class="start-grid">
+      <div class="card">
+        <h2>How this exam works</h2>
+        <ul class="tick">
+          <li><b>Adaptive.</b> Starts near the passing standard, then moves to harder items after correct answers and easier items after incorrect ones.</li>
+          <li><b>Variable length.</b> Minimum <b>75</b> items, maximum <b>145</b> items.</li>
+          <li><b>95% confidence rule.</b> The exam stops as soon as it is 95% certain your ability is above or below the passing standard.</li>
+          <li><b>5-hour limit</b> including optional breaks.</li>
+          <li><b>No going back.</b> Each item must be answered before you can advance, exactly as on the real exam.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Item types included</h2>
+        <ul class="chips">
+          <li>Multiple choice</li>
+          <li>Select all that apply</li>
+          <li>Ordered response (drag)</li>
+          <li>Drag &amp; drop grouping</li>
+          <li>Bow-tie</li>
+          <li>Matrix / grid</li>
+          <li>Cloze drop-down</li>
+          <li>Highlight text</li>
+          <li>Unfolding case studies</li>
+        </ul>
+        <p class="muted small">Case studies are delivered as six linked items that follow the NCSBN Clinical Judgment Measurement Model.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Exam settings</h2>
+      <div class="settings">
+        <label class="fld">
+          <span>Candidate name (shown in the exam header)</span>
+          <input id="opt-name" type="text" maxlength="40" placeholder="Candidate" autocomplete="off">
+        </label>
+
+        <label class="fld">
+          <span>Length</span>
+          <select id="opt-length">
+            <option value="full" selected>Full adaptive exam (75&ndash;145 items)</option>
+            <option value="short">Short adaptive session (25&ndash;60 items)</option>
+            <option value="mini">Quick check (15&ndash;30 items)</option>
+          </select>
+        </label>
+
+        <label class="fld">
+          <span>Time limit</span>
+          <select id="opt-time">
+            <option value="18000" selected>5 hours (exam standard)</option>
+            <option value="7200">2 hours</option>
+            <option value="3600">1 hour</option>
+            <option value="0">No time limit (untimed practice)</option>
+          </select>
+        </label>
+
+        <label class="chk"><input id="opt-hud" type="checkbox" checked> <span>Show live ability estimate panel (not shown on the real exam)</span></label>
+        <label class="chk"><input id="opt-breaks" type="checkbox" checked> <span>Offer optional breaks at 2 h and 3.5 h</span></label>
+        <label class="chk"><input id="opt-cases" type="checkbox" checked> <span>Include Next Generation case studies</span></label>
+      </div>
+
+      <div id="resume-box" class="resume" hidden>
+        <p>An exam in progress was found on this device.</p>
+        <div class="btn-row">
+          <button id="btn-resume" class="btn btn-primary" type="button">Resume exam</button>
+          <button id="btn-discard" class="btn" type="button">Discard and start over</button>
+        </div>
+      </div>
+
+      <div class="btn-row start-actions">
+        <button id="btn-start" class="btn btn-primary btn-lg" type="button">Begin exam</button>
+        <button id="btn-last-report" class="btn" type="button" hidden>View last score report</button>
+      </div>
+      <p id="bank-stats" class="muted small"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ EXAM SCREEN ============================ -->
+<section id="screen-exam" class="screen">
+  <header class="exam-bar">
+    <div class="exam-bar-left">
+      <span class="exam-logo">NCLEX-RN&reg; Practice</span>
+      <span id="exam-candidate" class="candidate"></span>
+    </div>
+    <div class="exam-bar-right">
+      <div class="meter" id="meter-item"><span class="meter-k">Item</span><span class="meter-v" id="v-item">1</span></div>
+      <div class="meter" id="meter-time"><span class="meter-k">Time Remaining</span><span class="meter-v" id="v-time">05:00:00</span></div>
+    </div>
+  </header>
+
+  <div class="exam-body">
+    <main class="exam-main" id="exam-main">
+      <div id="case-banner" class="case-banner" hidden></div>
+      <div id="item-host" class="item-host"></div>
+    </main>
+    <aside id="hud" class="hud" hidden>
+      <h3>Live performance <button id="hud-close" class="hud-x" type="button" aria-label="Hide panel">&times;</button></h3>
+      <div class="hud-row"><span>Ability (logits)</span><b id="hud-theta">0.00</b></div>
+      <div class="hud-row"><span>Standard error</span><b id="hud-se">&mdash;</b></div>
+      <div class="hud-row"><span>95% interval</span><b id="hud-ci">&mdash;</b></div>
+      <div class="hud-row"><span>Items answered</span><b id="hud-n">0</b></div>
+      <div class="hud-row"><span>Correct</span><b id="hud-correct">0</b></div>
+      <div class="hud-scale" aria-hidden="true">
+        <div class="hud-scale-track"><div class="hud-scale-band" id="hud-band"></div><div class="hud-scale-std"></div><div class="hud-scale-dot" id="hud-dot"></div></div>
+        <div class="hud-scale-labels"><span>-3</span><span>pass 0.00</span><span>+3</span></div>
+      </div>
+      <p id="hud-verdict" class="hud-verdict">Gathering evidence&hellip;</p>
+      <canvas id="hud-spark" width="260" height="70" aria-label="Ability estimate trend"></canvas>
+    </aside>
+  </div>
+
+  <footer class="exam-foot">
+    <div class="foot-left">
+      <button id="btn-calc" class="btn btn-ghost" type="button">Calculator</button>
+      <button id="btn-hud-toggle" class="btn btn-ghost" type="button">Performance</button>
+      <button id="btn-break" class="btn btn-ghost" type="button">Break</button>
+      <button id="btn-quit" class="btn btn-ghost" type="button">End exam</button>
+    </div>
+    <div class="foot-right">
+      <span id="foot-hint" class="foot-hint"></span>
+      <button id="btn-next" class="btn btn-primary btn-next" type="button" disabled>Next</button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============================ BREAK SCREEN ============================ -->
+<section id="screen-break" class="screen">
+  <div class="break-wrap">
+    <h1>Break</h1>
+    <p>Your exam clock continues to run during breaks, exactly as it does on the real NCLEX.</p>
+    <p class="break-time">Time remaining: <b id="break-time">&mdash;</b></p>
+    <button id="btn-resume-exam" class="btn btn-primary btn-lg" type="button">Resume exam</button>
+  </div>
+</section>
+
+<!-- ============================ REPORT SCREEN ============================ -->
+<section id="screen-report" class="screen scrollable">
+  <div id="report-host" class="report-host"></div>
+</section>
+
+<!-- ============================ REVIEW SCREEN ============================ -->
+<section id="screen-review" class="screen scrollable">
+  <div id="review-host" class="review-host"></div>
+</section>
+
+<!-- ============================ CALCULATOR ============================ -->
+<div id="calc" class="calc" hidden role="dialog" aria-label="On-screen calculator">
+  <div class="calc-head"><span>Calculator</span><button id="calc-close" class="calc-x" type="button" aria-label="Close">&times;</button></div>
+  <output id="calc-display" class="calc-display">0</output>
+  <div class="calc-pad" id="calc-pad"></div>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+    <div class="btn-row" id="modal-actions"></div>
+  </div>
+</div>
+
+<script src="js/bank/moc.js"></script>
+<script src="js/bank/sic.js"></script>
+<script src="js/bank/hpm.js"></script>
+<script src="js/bank/psi.js"></script>
+<script src="js/bank/bcc.js"></script>
+<script src="js/bank/pha.js"></script>
+<script src="js/bank/rrp.js"></script>
+<script src="js/bank/phy.js"></script>
+<script src="js/bank/cases.js"></script>
+<script src="js/irt.js"></script>
+<script src="js/items.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
