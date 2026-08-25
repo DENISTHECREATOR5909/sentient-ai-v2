@@ -1,4 +1,6 @@
-/* Safety and Infection Control - Safe and Effective Care Environment */
+/* Safety and Infection Prevention and Control - Safe and Effective Care Environment
+   (renamed from 'Safety and Infection Control' in the April 2026 test plan;
+   the content domain and the 10-16% range are unchanged) */
 (window.NCLEX_BANK = window.NCLEX_BANK || []).push(
 
 {id:'SIC-001',cat:'SIC',b:-1.8,type:'mc',

@@ -12,7 +12,7 @@
      client-need distribution (midpoint of each range).      */
   var CATS = {
     MOC: { name: 'Management of Care', group: 'Safe and Effective Care Environment', target: 0.18, range: '15–21%' },
-    SIC: { name: 'Safety and Infection Control', group: 'Safe and Effective Care Environment', target: 0.13, range: '10–16%' },
+    SIC: { name: 'Safety and Infection Prevention and Control', group: 'Safe and Effective Care Environment', target: 0.13, range: '10–16%' },
     HPM: { name: 'Health Promotion and Maintenance', group: 'Health Promotion and Maintenance', target: 0.09, range: '6–12%' },
     PSI: { name: 'Psychosocial Integrity', group: 'Psychosocial Integrity', target: 0.09, range: '6–12%' },
     BCC: { name: 'Basic Care and Comfort', group: 'Physiological Integrity', target: 0.09, range: '6–12%' },

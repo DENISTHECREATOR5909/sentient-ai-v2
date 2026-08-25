@@ -49,6 +49,11 @@ automatic fail, exactly as on the real exam.
 **Content balancing.** Every item is tagged to one of the eight NCLEX-RN client-need
 categories, and item selection is constrained so the delivered exam tracks the published
 test-plan percentages within a couple of points regardless of how the adaptive path runs.
+The blueprint follows the **NCLEX-RN Test Plan effective April 1, 2026** (in force through
+March 2029). Its percentage ranges are unchanged from the 2023 plan; the only difference is
+that *Safety and Infection Control* was renamed *Safety and Infection Prevention and
+Control*. Exam length (75–145 items), the five-hour limit, the 95% confidence rule, and the
+Next Generation item formats are also unchanged in the 2026 plan.
 
 **5-hour clock.** Counts down in the header, turns red in the last 30 minutes, offers
 optional breaks at 2 hours and 3.5 hours, and auto-submits at zero. The clock keeps
@@ -91,7 +96,7 @@ devices.
 | Client need | Test plan | Bank |
 |---|---|---|
 | Management of Care | 15–21% | 42 |
-| Safety and Infection Control | 10–16% | 34 |
+| Safety and Infection Prevention and Control | 10–16% | 34 |
 | Health Promotion and Maintenance | 6–12% | 26 |
 | Psychosocial Integrity | 6–12% | 27 |
 | Basic Care and Comfort | 6–12% | 27 |
