@@ -106,6 +106,7 @@
       timeLeft: opts.timeLimit * 1000,
       timed: opts.timeLimit > 0,
       breaksTaken: [],
+      hudOpen: false,
       startedAt: Date.now(),
       finished: false,
       result: null
@@ -260,8 +261,19 @@
   /* ============================================================
      HUD
      ============================================================ */
+  function isNarrow() {
+    return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+  }
+
+  function setHud(open) {
+    S.hudOpen = !!open;
+    $('hud').hidden = !S.hudOpen;
+    $('btn-hud-toggle').setAttribute('aria-pressed', S.hudOpen ? 'true' : 'false');
+    if (S.hudOpen) updateHud();
+  }
+
   function updateHud() {
-    if (!S.opts.hud) return;
+    if (!S.hudOpen) return;
     var e = S.engine.est.estimate();
     $('hud-theta').textContent = e.theta.toFixed(2);
     $('hud-se').textContent = S.engine.est.n ? e.se.toFixed(2) : '—';
@@ -399,7 +411,9 @@
       R.decision.pass === true ? 'Predicted result: PASS' :
       R.decision.pass === false ? 'Predicted result: FAIL' : 'No decision — exam ended early'));
     v.appendChild(el('p', 'vsub', R.decision.detail));
-    var conf = Math.round(100 * (R.decision.pass === false ? (1 - R.pAbove) : R.pAbove));
+    var raw = 100 * (R.decision.pass === false ? (1 - R.pAbove) : R.pAbove);
+    // never claim certainty: the model is a small-bank approximation
+    var conf = raw >= 99.5 ? '>99' : raw.toFixed(0);
     if (R.decision.pass !== null) {
       v.appendChild(el('span', 'vconf', 'Model confidence in this prediction: ' + conf + '%  ·  stopping rule: ' + R.decision.rule));
     }
@@ -429,8 +443,10 @@
       'Ability is reported in logits on the same scale the NCLEX uses, where 0.00 logits is the passing standard. ' +
       'After each answer the model updates a posterior distribution over your ability. The exam stops as soon as ' +
       'the 95% interval falls entirely on one side of the standard, or when the item or time limit is reached.'));
+    var pa = 100 * R.pAbove;
     var p2 = el('p', null,
-      'Your posterior probability of being above the passing standard is ' + (100 * R.pAbove).toFixed(1) + '%. ');
+      'Your posterior probability of being above the passing standard is ' +
+      (pa >= 99.95 ? 'greater than 99.9' : pa <= 0.05 ? 'less than 0.1' : pa.toFixed(1)) + '%. ');
     expl.appendChild(p2);
     expl.appendChild(el('p', 'muted small',
       'This is a practice estimate from a small item bank, not a prediction of your actual NCLEX result. ' +
@@ -688,6 +704,8 @@
       item.scenario.split('\n').forEach(function (p) { sc.appendChild(el('p', null, p)); });
       body.appendChild(sc);
     }
+    var chart = Items.renderChart(item);
+    if (chart) body.appendChild(chart);
     body.appendChild(el('p', 'q-stem', item.stem));
 
     // option-level marking for the two most common types
@@ -809,7 +827,10 @@
      ============================================================ */
   function startExamUi() {
     $('exam-candidate').textContent = S.opts.name || 'Candidate';
-    $('hud').hidden = !S.opts.hud;
+    // On phones the panel would cover the question, so it starts closed and
+    // is opened on demand from the Performance button.
+    setHud(S.opts.hud && !isNarrow());
+    $('btn-hud-toggle').hidden = !S.opts.hud;
     $('btn-break').hidden = !S.opts.breaks || !S.timed;
     show('screen-exam');
     paintTime();
@@ -838,12 +859,8 @@
     $('btn-next').addEventListener('click', submitCurrent);
     $('btn-resume-exam').addEventListener('click', function () { show('screen-exam'); });
 
-    $('btn-hud-toggle').addEventListener('click', function () {
-      S.opts.hud = !S.opts.hud;
-      $('hud').hidden = !S.opts.hud;
-      if (S.opts.hud) updateHud();
-    });
-    $('hud-close').addEventListener('click', function () { S.opts.hud = false; $('hud').hidden = true; });
+    $('btn-hud-toggle').addEventListener('click', function () { setHud(!S.hudOpen); });
+    $('hud-close').addEventListener('click', function () { setHud(false); });
     $('btn-break').addEventListener('click', startBreak);
 
     $('btn-quit').addEventListener('click', function () {
@@ -863,7 +880,7 @@
 
     window.addEventListener('beforeunload', function () { if (S && !S.finished) save(); });
     window.addEventListener('resize', function () {
-      if ($('screen-exam').classList.contains('is-active') && S && S.opts.hud) drawSpark();
+      if ($('screen-exam').classList.contains('is-active') && S && S.hudOpen) drawSpark();
       if ($('screen-report').classList.contains('is-active') && S && S.result) drawTrajectory();
     });
 

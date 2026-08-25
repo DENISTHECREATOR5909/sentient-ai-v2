@@ -413,7 +413,14 @@
 
     function tokenNode(tokIdx) {
       var tok = makeToken(item.tokens[tokIdx]);
-      tok.addEventListener('click', function () { picker.select(tok, tokIdx); });
+      tok.addEventListener('click', function (e) {
+        // With another token already selected, a click on a placed token means
+        // "drop it here" - let the event reach the surrounding target instead
+        // of stealing the selection.
+        if (picker.sel !== null && picker.sel !== tokIdx) return;
+        e.stopPropagation();
+        picker.select(tok, tokIdx);
+      });
       tok.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); picker.select(tok, tokIdx); }
       });
@@ -458,6 +465,8 @@
       b.appendChild(el('h4', null, label));
       var drop = el('div', 'dd-drop');
       wireTarget(drop, bi);
+      // the whole box is a target too, so a full drop zone can still receive
+      wireTarget(b, bi);
       drops.push(drop);
       b.appendChild(drop);
       bucketsWrap.appendChild(b);
@@ -672,6 +681,7 @@
     LETTERS: LETTERS,
     TYPE_LABEL: TYPE_LABEL,
     prepareItem: prepareItem,
+    renderChart: renderChart,
     blankResponse: blankResponse,
     isComplete: isComplete,
     score: score,

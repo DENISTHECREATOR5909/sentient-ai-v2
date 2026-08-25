@@ -26,6 +26,8 @@
 }
 
 *{box-sizing:border-box}
+/* the hidden attribute must win over any display rule below */
+[hidden]{display:none !important}
 html,body{height:100%}
 body{
   margin:0;font-family:var(--font);color:var(--ink);background:var(--bg-alt);
@@ -212,6 +214,12 @@ ul.chips li{background:var(--bg-alt);border:1px solid var(--line-soft);border-ra
 .bt-slot.is-target{border-color:var(--blue);background:#eef4fb}
 .bt-slot.filled{border-style:solid;background:#fff;color:var(--ink)}
 .bt-center .bt-slot{min-height:80px;border-color:var(--navy)}
+@media (min-width:901px){
+  .bowtie{position:relative}
+  .bt-col:first-child .bt-slot,.bt-col:last-child .bt-slot{position:relative}
+  .bt-col:first-child .bt-slot::after{content:"";position:absolute;left:100%;top:50%;width:.9rem;height:2px;background:var(--line)}
+  .bt-col:last-child .bt-slot::before{content:"";position:absolute;right:100%;top:50%;width:.9rem;height:2px;background:var(--line)}
+}
 .bt-pool{margin-top:1rem}
 .bt-pool h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.35rem}
 .bt-pool-row{display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem;border:1px dashed var(--line);border-radius:var(--radius);background:var(--bg-alt);min-height:52px}
@@ -346,7 +354,9 @@ table.breakdown td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width:900px){
   .start-grid{grid-template-columns:1fr}
   .settings{grid-template-columns:1fr}
-  .hud{position:fixed;inset:auto 0 0 0;flex:none;width:100%;max-height:62dvh;border-left:0;border-top:1px solid var(--line);z-index:30;box-shadow:0 -6px 18px rgba(16,24,40,.14)}
+  .hud{position:fixed;inset:auto 0 0 0;flex:none;width:100%;max-height:60dvh;overflow-y:auto;border-left:0;border-top:2px solid var(--navy);z-index:30;box-shadow:0 -6px 18px rgba(16,24,40,.22)}
+  .hud-x{font-size:1.6rem;padding:0 .5rem}
+  #btn-hud-toggle[aria-pressed="true"]{background:#dbe4ee}
   .order-wrap{grid-template-columns:1fr}
   .bowtie{grid-template-columns:1fr}
   .bt-col h4{text-align:left}
@@ -354,10 +364,21 @@ table.breakdown td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width:640px){
   body{font-size:15px}
   .exam-main{padding:1rem .85rem 1.5rem}
-  .exam-bar{flex-wrap:wrap;gap:.4rem}
+  /* keep the header on one line so the question area keeps its height */
+  .exam-bar{flex-wrap:nowrap;gap:.4rem;padding:.4rem .6rem}
+  .exam-logo{font-size:.78rem}
   .candidate{display:none}
-  .meter{min-width:78px}
-  .foot-left .btn{padding:.5rem .55rem;font-size:.85rem}
+  .meter{min-width:0;padding:.15rem .45rem}
+  .meter-k{font-size:.55rem}
+  .meter-v{font-size:.86rem}
+  /* one compact toolbar row; the disabled Next button already signals that
+     an answer is required, so the long hint is dropped */
+  .exam-foot{padding:.4rem .5rem;gap:.35rem}
+  .foot-hint{display:none}
+  .foot-left{flex-wrap:nowrap;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch}
+  .foot-left .btn{padding:.45rem .4rem;font-size:.8rem;white-space:nowrap;min-height:38px}
+  .btn-next{min-width:92px;min-height:38px}
+  .q-instr{font-size:.82rem}
   .q-stem{font-size:1rem}
   .calc{right:.5rem;left:.5rem;width:auto;bottom:4rem}
   .rev-head .idx{min-width:auto}
