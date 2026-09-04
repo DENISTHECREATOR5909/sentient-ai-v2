@@ -1,0 +1,13 @@
+{
+  "name": "nclex-rn-adaptive-practice-exam",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline, browser-based NCLEX-RN style computerized adaptive practice exam. No dependencies at runtime.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node build.mjs --artifact && node test/simulate.js && node test/renderers.mjs && node test/ui.mjs && node test/touch.mjs && node test/noscript.mjs && node test/offline.mjs && node test/standalone.mjs && node test/hosted.mjs && node test/savecontrols.mjs",
+    "test:engine": "node test/simulate.js",
+    "serve": "npx --yes http-server -p 8080 -c-1 .",
+    "build:artifact": "node build.mjs --artifact"
+  }
+}
