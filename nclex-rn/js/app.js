@@ -29,6 +29,10 @@
     mini:  { min: 15, max: 30,  caseAt: [1] }
   };
 
+  // The artifact viewer never grants a page download permission, so the build
+  // for it turns these off rather than showing controls that do nothing.
+  var CAN_SAVE_FILES = true; /* BUILD:CAN_SAVE_FILES */
+
   var STORAGE_KEY = 'nclex.cat.session.v1';
   var RESULT_KEY = 'nclex.cat.lastresult.v1';
 
@@ -540,17 +544,28 @@
     var bRev = el('button', 'btn btn-primary btn-lg', 'Review every question');
     bRev.type = 'button';
     bRev.addEventListener('click', function () { renderReview(); show('screen-review'); });
-    var bPrint = el('button', 'btn', 'Print / save as PDF');
-    bPrint.type = 'button';
-    bPrint.addEventListener('click', function () { window.print(); });
-    var bDl = el('button', 'btn', 'Download results (JSON)');
-    bDl.type = 'button';
-    bDl.addEventListener('click', downloadResults);
     var bNew = el('button', 'btn', 'Start a new exam');
     bNew.type = 'button';
     bNew.addEventListener('click', function () { location.reload(); });
-    [bRev, bPrint, bDl, bNew].forEach(function (b) { act.appendChild(b); });
+
+    act.appendChild(bRev);
+    if (CAN_SAVE_FILES) {
+      var bPrint = el('button', 'btn', 'Print / save as PDF');
+      bPrint.type = 'button';
+      bPrint.addEventListener('click', function () { window.print(); });
+      var bDl = el('button', 'btn', 'Download results (JSON)');
+      bDl.type = 'button';
+      bDl.addEventListener('click', downloadResults);
+      act.appendChild(bPrint);
+      act.appendChild(bDl);
+    }
+    act.appendChild(bNew);
     host.appendChild(act);
+    if (!CAN_SAVE_FILES) {
+      host.appendChild(el('p', 'muted small',
+        'Printing and exporting this report are available in the downloadable single-file ' +
+        'version of the exam; this hosted page cannot save files to your device.'));
+    }
 
     drawTrajectory();
   }
@@ -600,6 +615,7 @@
   }
 
   function downloadResults() {
+    /* BUILD:SAVE_BODY_START */
     var R = S.result;
     var payload = {
       generatedAt: new Date().toISOString(),
@@ -630,6 +646,7 @@
     a.download = 'nclex-practice-results.json';
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    /* BUILD:SAVE_BODY_END */
   }
 
   /* ============================================================
@@ -955,7 +972,7 @@
     navigator.serviceWorker.register('sw.js').catch(function () { /* offline caching unavailable */ });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function boot() {
     if (!BANK.length) {
       document.body.innerHTML = '<p style="padding:2rem;font:16px sans-serif">The question bank failed to load. ' +
         'Make sure the <code>js/bank/</code> files are next to <code>index.html</code>.</p>';
@@ -964,5 +981,9 @@
     wire();
     bootStartScreen();
     registerSw();
-  });
+    document.documentElement.setAttribute('data-js', 'ready');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

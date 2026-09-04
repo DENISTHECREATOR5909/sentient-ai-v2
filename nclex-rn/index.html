@@ -11,6 +11,29 @@
 </head>
 <body>
 
+<!-- If scripts never run - a file-manager preview, a mail attachment viewer, or
+     a browser with JavaScript switched off - the start screen still renders and
+     looks fully functional while every control is dead. This says so out loud. -->
+<script>
+(function () {
+  var h = document.documentElement;
+  h.setAttribute('data-js', 'loading');
+  setTimeout(function () {
+    if (h.getAttribute('data-js') === 'loading') h.setAttribute('data-js', 'error');
+  }, 4000);
+})();
+</script>
+<div class="js-warning" role="alert">
+  <strong>This exam needs JavaScript, and it is not running here.</strong>
+  <p>You are most likely looking at a <b>preview</b> rather than a real browser page. File
+  managers, mail apps and chat apps show <code>.html</code> files in a preview that renders the
+  layout but switches scripts off, so the page looks complete and nothing responds when you tap.</p>
+  <p><b>On iPhone or iPad:</b> save the file to Files, tap and hold it, choose <b>Share</b>, then
+  <b>Open in Safari</b> (or Chrome). <b>On Android:</b> open it from Chrome with
+  <code>Menu &rarr; Open file</code>. <b>On a computer:</b> right-click the file and choose
+  <b>Open with</b> your browser.</p>
+</div>
+
 <!-- ============================ START SCREEN ============================ -->
 <section id="screen-start" class="screen is-active">
   <div class="start-wrap">

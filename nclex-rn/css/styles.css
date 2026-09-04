@@ -2,6 +2,7 @@
    NCLEX-RN adaptive practice exam - Pearson VUE inspired shell
    ============================================================ */
 :root{
+  color-scheme:light;   /* the exam interface is white in every theme */
   --ink:#1b1b1b;
   --ink-soft:#4a4a4a;
   --muted:#6d7278;
@@ -26,6 +27,12 @@
 }
 
 *{box-sizing:border-box}
+/* Touch: kill the double-tap zoom delay and give every custom tap target a
+   visible highlight. cursor:pointer above is what makes iOS Safari fire click
+   on non-interactive elements at all. */
+.opt,.tok,.bt-slot,.dd-drop,.dd-bucket,.dd-pool,.hl-seg,td.cell,.rf,.rev-head,.record-tab,.btn{
+  touch-action:manipulation;-webkit-tap-highlight-color:rgba(28,93,168,.15);
+}
 /* the hidden attribute must win over any display rule below */
 [hidden]{display:none !important}
 html,body{height:100%}
@@ -38,10 +45,22 @@ h1,h2,h3{line-height:1.25;margin:0 0 .5em}
 p{margin:0 0 .8em}
 a{color:var(--blue)}
 
-.screen{display:none;min-height:100dvh}
+.screen{display:none;min-height:100vh;min-height:100dvh}
 .screen.is-active{display:block}
 .screen.scrollable{overflow-y:auto}
-#screen-exam.is-active{display:flex;flex-direction:column;height:100dvh}
+#screen-exam.is-active{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+.js-warning{
+  display:block;margin:0;padding:1rem 1.1rem;background:var(--warn-bg);
+  border-bottom:3px solid #c99700;color:#5b4300;font-size:.92rem;line-height:1.55;
+}
+.js-warning strong{display:block;font-size:1.05rem;margin-bottom:.4rem}
+.js-warning p{margin:0 0 .5rem}
+.js-warning p:last-child{margin:0}
+.js-warning code{background:rgba(0,0,0,.06);padding:.05rem .3rem;border-radius:3px}
+/* hidden while the app is booting, and for good once it has booted; shown again
+   if boot never completed, and shown from the start if scripting is off */
+html[data-js="loading"] .js-warning,html[data-js="ready"] .js-warning{display:none}
 
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
@@ -185,8 +204,9 @@ ul.chips li{background:var(--bg-alt);border:1px solid var(--line-soft);border-ra
 .tok{
   display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--line);
   border-radius:var(--radius);padding:.5rem .6rem;margin-bottom:.4rem;font-size:.9rem;
-  cursor:grab;touch-action:none;user-select:none;
+  cursor:pointer;touch-action:manipulation;user-select:none;
 }
+.tok:active{cursor:grabbing}
 .tok.is-sel{border-color:var(--blue);box-shadow:0 0 0 2px #cfe0f5}
 .tok.is-drag{opacity:.4}
 .tok-num{
@@ -199,18 +219,18 @@ ul.chips li{background:var(--bg-alt);border:1px solid var(--line-soft);border-ra
 .ghost{height:6px;background:var(--blue);border-radius:3px;margin:.25rem 0}
 
 /* drag & drop buckets */
-.dd-pool{display:flex;flex-wrap:wrap;gap:.45rem;padding:.5rem;border:1px dashed var(--line);border-radius:var(--radius);background:var(--bg-alt);min-height:56px;margin-bottom:1rem}
+.dd-pool{cursor:pointer;touch-action:manipulation;display:flex;flex-wrap:wrap;gap:.45rem;padding:.5rem;border:1px dashed var(--line);border-radius:var(--radius);background:var(--bg-alt);min-height:56px;margin-bottom:1rem}
 .dd-pool .tok{margin:0}
 .dd-buckets{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-.dd-bucket{border:1px solid var(--line);border-radius:var(--radius);padding:.6rem;background:#fff}
+.dd-bucket{cursor:pointer;touch-action:manipulation;border:1px solid var(--line);border-radius:var(--radius);padding:.6rem;background:#fff}
 .dd-bucket h4{font-size:.85rem;margin:0 0 .45rem;color:var(--navy)}
-.dd-drop{min-height:64px;border:1px dashed var(--line);border-radius:var(--radius);padding:.35rem;background:var(--bg-alt)}
+.dd-drop{cursor:pointer;touch-action:manipulation;min-height:64px;border:1px dashed var(--line);border-radius:var(--radius);padding:.35rem;background:var(--bg-alt)}
 .dd-drop.is-target{background:#eef4fb;border-color:var(--blue)}
 
 /* bow-tie */
 .bowtie{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;align-items:start}
 .bt-col h4{font-size:.82rem;text-align:center;color:var(--navy);margin-bottom:.45rem}
-.bt-slot{border:2px dashed var(--line);border-radius:var(--radius);min-height:54px;padding:.35rem;margin-bottom:.5rem;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;text-align:center;font-size:.85rem;color:var(--muted)}
+.bt-slot{cursor:pointer;touch-action:manipulation;border:2px dashed var(--line);border-radius:var(--radius);min-height:54px;padding:.35rem;margin-bottom:.5rem;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;text-align:center;font-size:.85rem;color:var(--muted)}
 .bt-slot.is-target{border-color:var(--blue);background:#eef4fb}
 .bt-slot.filled{border-style:solid;background:#fff;color:var(--ink)}
 .bt-center .bt-slot{min-height:80px;border-color:var(--navy)}
@@ -354,7 +374,7 @@ table.breakdown td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width:900px){
   .start-grid{grid-template-columns:1fr}
   .settings{grid-template-columns:1fr}
-  .hud{position:fixed;inset:auto 0 0 0;flex:none;width:100%;max-height:60dvh;overflow-y:auto;border-left:0;border-top:2px solid var(--navy);z-index:30;box-shadow:0 -6px 18px rgba(16,24,40,.22)}
+  .hud{position:fixed;inset:auto 0 0 0;flex:none;width:100%;max-height:60vh;max-height:60dvh;overflow-y:auto;border-left:0;border-top:2px solid var(--navy);z-index:30;box-shadow:0 -6px 18px rgba(16,24,40,.22)}
   .hud-x{font-size:1.6rem;padding:0 .5rem}
   #btn-hud-toggle[aria-pressed="true"]{background:#dbe4ee}
   .order-wrap{grid-template-columns:1fr}

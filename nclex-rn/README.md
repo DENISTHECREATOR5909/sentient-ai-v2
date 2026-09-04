@@ -23,9 +23,15 @@ Three options, in increasing order of capability:
 
 | How | Command | Offline | Notes |
 |---|---|---|---|
-| Single file | open `nclex-rn-practice-exam.html` | yes | everything inlined; email it, drop it on a phone, open from a USB stick |
+| Single file | open `nclex-rn-practice-exam.html` | yes | everything inlined; email it, put it on a USB stick |
 | Open the folder | open `index.html` | yes | runs from `file://`; no service worker |
 | Serve it | `npm run serve` then open `http://localhost:8080` | yes, after first load | registers a service worker and installs as a PWA |
+| Hosted | `npm run build:artifact`, publish `artifact.html` | no | a URL, which is the only reliable route on a phone |
+
+**On a phone, use a URL rather than the file.** Tapping an `.html` file in iOS Files, Mail,
+or a chat app opens a *preview* that renders the layout but does not execute JavaScript, so
+the start screen looks complete and every control is dead. The app detects this and shows a
+banner explaining how to open it properly, but a hosted URL avoids the problem entirely.
 
 Regenerate the single-file build after editing sources:
 
@@ -156,6 +162,10 @@ npm test
 | `test/ui.mjs` | full 75–145 item exam driven end-to-end, mobile viewport run, timer, calculator, ability panel, save and resume across a reload, end-early behaviour, and a competent candidate answering from the scoring key reaching PASS at 75 items |
 | `test/offline.mjs` | service worker registration and precaching, then boots and runs an exam with the network switched off |
 | `test/standalone.mjs` | the single-file build runs a complete exam with zero network requests |
+| `test/touch.mjs` | drives a full exam using real touch taps (not synthesised mouse clicks) across five phone and tablet profiles, and checks the question area is never covered |
+| `test/noscript.mjs` | with scripting disabled the warning banner appears; with scripting on it never appears, including after the watchdog window |
+| `test/hosted.mjs` | the hosted build runs inside the host document skeleton under a light host, a dark host, and a phone, keeping its own light palette |
+| `test/savecontrols.mjs` | the hosted build offers no dead save controls; the downloadable build's JSON export actually fires |
 
 The browser suites use Playwright.
 
@@ -171,7 +181,9 @@ js/bank/*.js                  the item bank, one file per client-need category
 sw.js                         offline cache
 build.mjs                     produces the single-file build
 test/                         engine simulation and browser tests
-nclex-rn-practice-exam.html   generated single-file build
+nclex-rn-practice-exam.html   generated single-file build (downloadable)
+artifact.html                 generated build for hosting (no document skeleton,
+                              no service worker, no file-saving controls)
 ```
 
 ## Adding questions
