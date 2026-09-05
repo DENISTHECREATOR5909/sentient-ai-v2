@@ -1,0 +1,22 @@
+{
+  "name": "@agent-city/runtime",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The Foundry at runtime: Atlas's orchestrator, the research cloud, the build workflow, the repair loop and the Genesis Foundry.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@agent-city/core": "*",
+    "@anthropic-ai/sdk": "^0.124.0"
+  }
+}

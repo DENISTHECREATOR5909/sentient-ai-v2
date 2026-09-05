@@ -1,0 +1,26 @@
+{
+  "name": "@agent-city/server",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Event-stream bridge: serves the city and streams the orchestrator's real event journal over WebSocket.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "foundry": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build && node dist/main.js",
+    "cli": "tsc --build && node dist/cli.js",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@agent-city/core": "*",
+    "@agent-city/runtime": "*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13"
+  }
+}

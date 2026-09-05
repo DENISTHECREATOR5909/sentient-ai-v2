@@ -1,0 +1,18 @@
+{
+  "name": "@agent-city/core",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Domain law for The Foundry: events, task graph, permissions, evidence, release gates, genesis lifecycle, careers, capability routing.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build"
+  }
+}
